@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Апгрейдер</title>
+    <!-- Подключаем скрипт Telegram -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --bg: #121212; 
+            --text: #ffffff; 
+            --accent: #ffcc00; 
+            --panel: #1e1e1e;
+        }
+        
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+            user-select: none;
+        }
+        
+        /* Верхняя панель */
+        .top-bar { 
+            padding: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--panel);
+            border-bottom: 1px solid #333;
+        }
+        
+        .balance { 
+            background: #2a2a2a; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-weight: bold;
+        }
+        
+        .balance span { color: var(--accent); }
+
+        /* Основная зона */
+        .main-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            text-align: center;
+        }
+        
+        /* Колесо */
+        .wheel-container { 
+            position: relative; 
+            width: 260px; 
+            height: 260px; 
+            margin-bottom: 30px; 
+        }
+        
+        .wheel { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 6px solid #333; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: radial-gradient(circle, #2a2a2a, #000); 
+            font-size: 32px; 
+            font-weight: bold; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5) inset;
+        }
+        
+        .pointer { 
+            position: absolute; 
+            top: -15px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 0; 
+            border-left: 20px solid transparent; 
+            border-right: 20px solid transparent; 
+            border-top: 30px solid var(--accent); 
+            z-index: 10;
+        }
+
+        /* Кнопки режимов (Реал/Демо) */
+        .mode-switch { 
+            display: flex; 
+            background: #222; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            margin-bottom: 20px; 
+            width: 100%; 
+            max-width: 320px;
+            border: 1px solid #444;
+        }
+        
+        .mode-switch button { 
+            flex: 1; 
+            padding: 14px; 
+            background: none; 
+            border: none; 
+            color: #888; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        
+        .mode-switch button.active { 
+            background: var(--accent); 
+            color: #000; 
+        }
+
+        /* Кнопка прокачки */
+        .upgrade-btn { 
+            width: 100%; 
+            max-width: 320px; 
+            padding: 18px; 
+            background: var(--accent); 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 20px; 
+            color: #000; 
+            cursor: pointer; 
+            margin-bottom: 30px; 
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+            transition: 0.1s;
+        }
+        
+        .upgrade-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Инвентарь (визуал) */
+        .inventory { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        
+        .item { 
+            width: 90px; 
+            height: 90px; 
+            background: #1a1a1a; 
+            border: 2px solid #333; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 12px; 
+            color: #666; 
+            transition: 0.3s;
+        }
+
+        /* Нижнее меню */
+        .bottom-nav { 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 5px 20px 5px; 
+            background: #000; 
+            border-top: 1px solid #222; 
+        }
+        
+        .nav-item { 
+            color: #555; 
+            font-size: 11px; 
+            text-align: center; 
+            cursor: pointer; 
+            flex: 1;
+        }
+        
+        .nav-item.active { color: var(--accent); }
+        
+        .nav-icon { 
+            font-size: 24px; 
+            display: block; 
+            margin-bottom: 4px; 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Верхняя панель -->
+    <div class="top-bar">
+        <div style="font-weight: bold;">Профиль</div>
+        <div class="balance">G <span id="balance-amount">0.28</span></div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="main-content">
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel">?</div>
+        </div>
+
+        <div class="mode-switch">
+            <button class="active" id="btn-real" onclick="setMode('real')">РЕАЛ</button>
+            <button id="btn-demo" onclick="setMode('demo')">ДЕМО</button>
+        </div>
+
+        <button class="upgrade-btn" id="spin-btn" onclick="spin()">ПРОКАЧАТЬ</button>
+
+        <div class="inventory">
+            <div class="item">Твой скин</div>
+            <div class="item" id="target-item">Цель</div>
+        </div>
+    </div>
+
+    <!-- Нижнее меню -->
+    <div class="bottom-nav">
+        <div class="nav-item active"><span class="nav-icon">🎮</span>Мини-игры</div>
+        <div class="nav-item"><span class="nav-icon">🎁</span>Призы</div>
+        <div class="nav-item"><span class="nav-icon">💳</span>Баланс</div>
+        <div class="nav-item"><span class="nav-icon">👤</span>Меню</div>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp (разворачивает на весь экран)
+        let tg = window.Telegram.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand(); 
+        }
+
+        let isDemo = false;
+        let isSpinning = false;
+
+        // Переключение режима Реал/Демо
+        function setMode(mode) {
+            if (isSpinning) return; // Не даем переключать во время игры
+            
+            isDemo = (mode === 'demo');
+            
+            document.getElementById('btn-real').classList.toggle('active', !isDemo);
+            document.getElementById('btn-demo').classList.toggle('active', isDemo);
+            
+            const upgradeBtn = document.getElementById('spin-btn');
+            if(isDemo) {
+                document.documentElement.style.setProperty('--accent', '#888888');
+                upgradeBtn.style.boxShadow = 'none';
+            } else {
+                document.documentElement.style.setProperty('--accent', '#ffcc00');
+                upgradeBtn.style.boxShadow = '0 4px 15px rgba(255, 204, 0, 0.3)';
+            }
+        }
+
+        // Логика прокрутки (Апгрейдер)
+        function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            
+            const wheel = document.getElementById('wheel');
+            const targetItem = document.getElementById('target-item');
+            const spinBtn = document.getElementById('spin-btn');
+            
+            spinBtn.disabled = true;
+            spinBtn.innerText = "КРУТИМ...";
+            
+            // Сброс предыдущих результатов
+            targetItem.style.border = '2px solid #333';
+            targetItem.innerText = "Цель";
+            wheel.style.color = '#fff';
+            
+            let counter = 0;
+            // Анимация "кручения" цифр
+            const interval = setInterval(() => {
+                wheel.innerText = Math.floor(Math.random() * 100) + '%';
+                counter++;
+                
+                if (counter > 25) { // Количество кадров анимации
+                    clearInterval(interval);
+                    
+                    // Логика: 50% шанс успеха
+                    const success = Math.random() < 0.5; 
+                    
+                    if (success) {
+                        wheel.innerText = 'УСПЕХ!';
+                        wheel.style.color = '#00ff00';
+                        targetItem.style.border = '2px solid #00ff00';
+                        targetItem.innerText = 'Улучшен!';
+                    } else {
+                        wheel.innerText = 'ПРОВАЛ';
+                        wheel.style.color = '#ff0000';
+                        targetItem.style.border = '2px solid #ff0000';
+                        targetItem.innerText = 'Сгорел';
+                    }
+                    
+                    // Возвращаем кнопку в рабочее состояние
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = "ПРОКАЧАТЬ";
+                    isSpinning = false;
+                    
+                    // Через 2.5 секунды сбрасываем цвета (готово к следующему разу)
+                    setTimeout(() => {
+                        wheel.innerText = '?';
+                        wheel.style.color = '#fff';
+                        targetItem.style.border = '2px solid #333';
+                        targetItem.innerText = "Цель";
+                    }, 2500);
+                }
+            }, 50);
+        }
+    </script>
+</body>
+</html>
