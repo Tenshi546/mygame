@@ -150,7 +150,7 @@
         .mult-btn {
             flex: 1; background: var(--surface); border: 1px solid rgba(255,255,255,0.05);
             color: var(--text-muted); padding: 12px 5px; border-radius: 12px; font-weight: 800;
-            font-size: 14px; font-family: inherit; min-width: 55px;
+            font-size: 13px; font-family: inherit; min-width: 48px;
         }
         .mult-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
@@ -165,61 +165,34 @@
         #screen-crash { width: 100%; display: none; flex-direction: column; align-items: center; }
         
         .crash-graph {
-            width: 100%;
-            max-width: 360px;
-            height: 250px;
-            background: #0f0f15;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%; max-width: 360px; height: 250px; background: #0f0f15;
+            border-radius: 24px; border: 1px solid var(--border); position: relative;
+            overflow: hidden; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .crash-grid {
-            position: absolute;
-            width: 100%; height: 100%;
+            position: absolute; width: 100%; height: 100%;
             background-image: 
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
-        .crash-line-container {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 100%;
-        }
-
-        /* Эффект полета ракеты */
         .crash-rocket {
-            position: absolute;
-            font-size: 32px;
-            z-index: 10;
-            transform: rotate(-45deg);
-            display: none;
-            transition: left 0.1s linear, bottom 0.1s linear;
+            position: absolute; font-size: 32px; z-index: 10; transform: rotate(-45deg);
+            display: none; transition: left 0.1s linear, bottom 0.1s linear;
         }
 
         .crash-value {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 52px;
-            font-weight: 900;
-            color: var(--text);
-            z-index: 15;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 52px; font-weight: 900; color: var(--text); z-index: 15;
             text-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
         .crash-value.crashed { color: var(--fail); text-shadow: 0 0 30px var(--fail); }
         .crash-value.won { color: var(--success); text-shadow: 0 0 30px var(--success); }
 
         .crash-controls {
-            width: 100%;
-            max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px;
         }
 
         .input-row { display: flex; gap: 10px; }
@@ -321,6 +294,7 @@
                     <button class="mult-btn" onclick="setMultiplier(2, this)">x2</button>
                     <button class="mult-btn" onclick="setMultiplier(3, this)">x3</button>
                     <button class="mult-btn" onclick="setMultiplier(5, this)">x5</button>
+                    <button class="mult-btn" onclick="setMultiplier(10, this)">x10</button>
                 </div>
                 <button class="action-btn" id="spin-btn" onclick="spinUpgrade()">КРУТИТЬ</button>
             </div>
@@ -332,7 +306,6 @@
                 <div class="crash-grid"></div>
                 <div class="crash-rocket" id="crash-rocket">🚀</div>
                 <div class="crash-value" id="crash-value">1.00x</div>
-                <!-- Линия графика -->
                 <svg id="crash-svg" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
                     <path id="crash-path" d="M 0 250 Q 150 250, 300 0" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="2000" stroke-dashoffset="2000" />
                 </svg>
@@ -553,7 +526,10 @@
             arrow.style.transform = `rotate(${360 * 5 + targetDeg}deg)`;
 
             setTimeout(() => {
+                // 1. Сначала удаляем предмет, который крутили (он либо сгорел, либо улучшился)
                 userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
+                
+                // 2. Если победа - добавляем новый
                 if (win) {
                     wonGift = { ...slotTargetGift };
                     userInventory.push(wonGift);
@@ -561,6 +537,8 @@
                 } else {
                     showToast("ПРОВАЛ. Подарок сгорел.");
                 }
+                
+                // 3. Очищаем слот и обновляем
                 slotSourceGift = null;
                 updateTarget();
                 updateUI();
@@ -578,7 +556,7 @@
             }, 5000);
         }
 
-        // --- ЛОГИКА КРАША (ПОЛНОСТЬЮ ПЕРЕПИСАНА) ---
+        // --- ЛОГИКА КРАША ---
         function startCrash() {
             if (isCrashPlaying) return;
             
@@ -615,37 +593,30 @@
 
             const path = document.getElementById('crash-path');
             path.style.stroke = 'var(--accent)';
-            path.style.strokeDashoffset = '2000'; // Сброс анимации линии
+            path.style.strokeDashoffset = '2000';
 
-            // Генерируем точку краха (от 1.10 до 15.0)
-            // Чем больше множитель, тем меньше шанс
+            // Генерируем точку краха
             const r = Math.random();
             crashTargetPoint = (1.1 + (Math.pow(r, 2) * 14)).toFixed(2); 
             
-            // Тикер игры
             let tick = 0;
             crashInterval = setInterval(() => {
                 tick++;
-                // Скорость роста (замедляется со временем)
                 let speed = 0.01 + (1.5 / crashMultiplier) * 0.005; 
                 crashMultiplier += speed;
                 
-                // Обновляем текст
                 crashValue.innerText = crashMultiplier.toFixed(2) + 'x';
                 cashoutBtn.innerText = `ЗАБРАТЬ ${Math.floor(bet * crashMultiplier)} ₽`;
 
-                // Двигаем ракету
                 let x = 10 + (crashMultiplier - 1) * 30;
                 let y = 10 + (crashMultiplier - 1) * 15;
                 rocket.style.left = `${x}px`;
                 rocket.style.bottom = `${y}px`;
                 
-                // Рисуем линию (имитация графика)
                 let percentX = Math.min((crashMultiplier - 1) / 10, 1) * 100;
                 path.setAttribute('d', `M 0 250 Q ${percentX/2} 250, ${percentX}% 0`);
                 path.style.strokeDashoffset = 2000 - (tick * 10);
 
-                // Проверка на взрыв
                 if (crashMultiplier >= parseFloat(crashTargetPoint)) {
                     crashGame();
                 }
@@ -810,4 +781,4 @@
         init();
     </script>
 </body>
-                    </html>
+</html>
