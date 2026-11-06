@@ -2,51 +2,91 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Апгрейдер</title>
-    <!-- Подключаем скрипт Telegram -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Апгрейдер Подарков</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+
         :root { 
-            --bg: #121212; 
+            --bg: #0e0e0e; 
+            --surface: #1a1a1a;
+            --surface-light: #252525;
             --text: #ffffff; 
+            --text-muted: #888888;
             --accent: #ffcc00; 
-            --panel: #1e1e1e;
+            --accent-hover: #ffdd33;
+            --success: #00ff66;
+            --fail: #ff3333;
+            --border: #333333;
         }
         
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg); 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg); 
             color: var(--text); 
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
             overflow: hidden; 
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
         /* Верхняя панель */
         .top-bar { 
-            padding: 15px; 
+            padding: 12px 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            background: var(--panel);
-            border-bottom: 1px solid #333;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
         }
         
+        .logo { font-weight: 800; font-size: 16px; line-height: 1.1; letter-spacing: 0.5px; }
+        .logo span { color: var(--accent); font-size: 12px; display: block; font-weight: 600; }
+        
+        .balance-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .balance { 
-            background: #2a2a2a; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            font-weight: bold;
+            background: var(--surface-light); 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            font-weight: 800;
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 15px;
         }
         
         .balance span { color: var(--accent); }
+
+        .btn-add-balance {
+            background: var(--accent);
+            color: #000;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 204, 0, 0.2);
+        }
+        
+        .btn-add-balance:active { transform: scale(0.9); }
 
         /* Основная зона */
         .main-content { 
@@ -54,265 +94,628 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
+            padding: 15px; 
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        /* Слоты */
+        .slots-container {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 20px;
+        }
+
+        .slot-box {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            position: relative;
+            min-height: 110px;
+            transition: 0.3s;
         }
+
+        .slot-box.active-target {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
+        }
+
+        .slot-title { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;}
         
+        .slot-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        .slot-price { font-size: 12px; color: var(--accent); font-weight: 800; }
+
+        .slot-placeholder {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #444;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #444;
+            margin-bottom: 5px;
+        }
+
         /* Колесо */
-        .wheel-container { 
-            position: relative; 
-            width: 260px; 
-            height: 260px; 
-            margin-bottom: 30px; 
+        .wheel-section {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
         }
         
-        .wheel { 
-            width: 100%; 
-            height: 100%; 
-            border-radius: 50%; 
-            border: 6px solid #333; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: radial-gradient(circle, #2a2a2a, #000); 
-            font-size: 32px; 
-            font-weight: bold; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.5) inset;
-        }
-        
-        .pointer { 
+        .wheel-pointer {
             position: absolute; 
             top: -15px; 
             left: 50%; 
-            transform: translateX(-50%); 
-            width: 0; 
-            height: 0; 
-            border-left: 20px solid transparent; 
-            border-right: 20px solid transparent; 
-            border-top: 30px solid var(--accent); 
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 18px solid transparent; 
+            border-right: 18px solid transparent;
+            border-top: 35px solid var(--accent);
             z-index: 10;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
         }
 
-        /* Кнопки режимов (Реал/Демо) */
-        .mode-switch { 
-            display: flex; 
-            background: #222; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            margin-bottom: 20px; 
+        .wheel-container { 
             width: 100%; 
-            max-width: 320px;
-            border: 1px solid #444;
-        }
-        
-        .mode-switch button { 
-            flex: 1; 
-            padding: 14px; 
-            background: none; 
-            border: none; 
-            color: #888; 
-            font-weight: bold; 
-            font-size: 16px;
-            cursor: pointer; 
-            transition: 0.3s;
-        }
-        
-        .mode-switch button.active { 
-            background: var(--accent); 
-            color: #000; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 6px solid #222; 
+            background: #111;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9) inset, 0 10px 20px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Кнопка прокачки */
-        .upgrade-btn { 
+        /* Используем конический градиент для секторов */
+        .wheel-segments {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                #2a2a2a 0deg 36deg, 
+                #1a1a1a 36deg 72deg, 
+                #2a2a2a 72deg 108deg, 
+                #1a1a1a 108deg 144deg, 
+                #2a2a2a 144deg 180deg, 
+                #1a1a1a 180deg 216deg, 
+                #2a2a2a 216deg 252deg, 
+                #1a1a1a 252deg 288deg, 
+                #2a2a2a 288deg 324deg, 
+                #1a1a1a 324deg 360deg
+            );
+            transition: transform 4s cubic-bezier(0.15, 0.9, 0.1, 1); 
+            border-radius: 50%;
+        }
+
+        .wheel-center-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: #0e0e0e;
+            border-radius: 50%;
+            border: 3px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .multiplier-text { font-size: 24px; font-weight: 800; color: var(--accent); line-height: 1; }
+        .chance-text { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+
+        /* Панель множителей */
+        .chance-panel {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 20px;
+        }
+        
+        .chance-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 0;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+
+        .chance-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(255, 204, 0, 0.2);
+        }
+
+        .chance-btn .pct {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .chance-btn.active .pct { color: #333; }
+
+        /* Кнопка действия */
+        .action-btn { 
             width: 100%; 
-            max-width: 320px; 
-            padding: 18px; 
+            max-width: 360px; 
+            padding: 16px; 
             background: var(--accent); 
             border: none; 
-            border-radius: 12px; 
+            border-radius: 14px; 
             font-weight: 800; 
-            font-size: 20px; 
+            font-size: 18px; 
             color: #000; 
             cursor: pointer; 
-            margin-bottom: 30px; 
-            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 204, 0, 0.3);
             transition: 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Montserrat', sans-serif;
         }
         
-        .upgrade-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Инвентарь (визуал) */
-        .inventory { 
-            display: flex; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        
-        .item { 
-            width: 90px; 
-            height: 90px; 
-            background: #1a1a1a; 
-            border: 2px solid #333; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 12px; 
-            color: #666; 
-            transition: 0.3s;
-        }
+        .action-btn:active { transform: scale(0.98); }
+        .action-btn:disabled { background: #333; color: #666; box-shadow: none; transform: none; }
 
         /* Нижнее меню */
         .bottom-nav { 
             display: flex; 
-            justify-content: space-around; 
-            padding: 10px 5px 20px 5px; 
-            background: #000; 
-            border-top: 1px solid #222; 
+            justify-content: space-between; 
+            padding: 10px 15px 20px 15px; 
+            background: #0a0a0a; 
+            border-top: 1px solid var(--border); 
+            z-index: 20;
         }
         
         .nav-item { 
-            color: #555; 
-            font-size: 11px; 
+            color: var(--text-muted); 
+            font-size: 10px; 
             text-align: center; 
             cursor: pointer; 
             flex: 1;
+            transition: 0.2s;
+            font-weight: 600;
         }
         
         .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 4px; }
         
-        .nav-icon { 
-            font-size: 24px; 
-            display: block; 
-            margin-bottom: 4px; 
+        /* Модальные окна (Общие стили) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-end;
         }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: var(--surface);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 20px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+            border-top: 1px solid #333;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title { font-size: 20px; font-weight: 800; }
+        
+        .close-btn {
+            background: var(--surface-light); 
+            border: none; 
+            color: var(--text); 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+
+        /* Сетка инвентаря */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .inv-item {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        .inv-item:active { transform: scale(0.97); }
+
+        .inv-item img {
+            width: 60px; height: 60px; object-fit: contain; margin-bottom: 10px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+        
+        .inv-item .name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .inv-item .price { font-size: 12px; color: var(--accent); font-weight: 800;}
+
+        /* Меню пополнения */
+        .deposit-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .deposit-btn {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .deposit-btn:active { background: #333; }
+        .deposit-btn span { color: var(--text-muted); font-size: 12px; }
+
+        /* Уведомление (Тост) */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 200;
+            transition: 0.3s;
+            opacity: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
     </style>
 </head>
 <body>
 
     <!-- Верхняя панель -->
     <div class="top-bar">
-        <div style="font-weight: bold;">Профиль</div>
-        <div class="balance">G <span id="balance-amount">0.28</span></div>
+        <div class="logo">STANDOFF<span>CRAFT</span></div>
+        <div class="balance-container">
+            <div class="balance">G <span id="balance">1250.00</span></div>
+            <button class="btn-add-balance" onclick="openModal('deposit-modal')">+</button>
+        </div>
     </div>
 
     <!-- Основной контент -->
     <div class="main-content">
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel">?</div>
+        
+        <!-- Слоты (Что улучшаем и На что) -->
+        <div class="slots-container">
+            <div class="slot-box">
+                <div class="slot-title">Ваш скин</div>
+                <img src="https://i.ibb.co/3s6cR8Z/gift-box.png" class="slot-img" alt="skin">
+                <div class="slot-price">50 G</div>
+            </div>
+            
+            <div class="slot-box active-target" onclick="openInventory()">
+                <div class="slot-title">Цель</div>
+                <div class="slot-placeholder">+</div>
+                <div class="slot-price" id="target-price" style="color: var(--text-muted);">Выбрать</div>
+            </div>
         </div>
 
-        <div class="mode-switch">
-            <button class="active" id="btn-real" onclick="setMode('real')">РЕАЛ</button>
-            <button id="btn-demo" onclick="setMode('demo')">ДЕМО</button>
+        <!-- Колесо -->
+        <div class="wheel-section">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-container">
+                <div class="wheel-segments" id="wheel"></div>
+                <div class="wheel-center-info">
+                    <div class="multiplier-text" id="current-multiplier">x2</div>
+                    <div class="chance-text" id="current-chance">Шанс: 50%</div>
+                </div>
+            </div>
         </div>
 
-        <button class="upgrade-btn" id="spin-btn" onclick="spin()">ПРОКАЧАТЬ</button>
-
-        <div class="inventory">
-            <div class="item">Твой скин</div>
-            <div class="item" id="target-item">Цель</div>
+        <!-- Кнопки множителей -->
+        <div class="chance-panel">
+            <button class="chance-btn active" onclick="setMultiplier(2, this)">x2<span class="pct">50%</span></button>
+            <button class="chance-btn" onclick="setMultiplier(3, this)">x3<span class="pct">33%</span></button>
+            <button class="chance-btn" onclick="setMultiplier(5, this)">x5<span class="pct">20%</span></button>
+            <button class="chance-btn" onclick="setMultiplier(10, this)">x10<span class="pct">10%</span></button>
         </div>
+
+        <button class="action-btn" id="spin-btn" onclick="spin()">Прокачать</button>
     </div>
 
     <!-- Нижнее меню -->
     <div class="bottom-nav">
-        <div class="nav-item active"><span class="nav-icon">🎮</span>Мини-игры</div>
-        <div class="nav-item"><span class="nav-icon">🎁</span>Призы</div>
-        <div class="nav-item"><span class="nav-icon">💳</span>Баланс</div>
-        <div class="nav-item"><span class="nav-icon">👤</span>Меню</div>
+        <div class="nav-item active"><span class="nav-icon">🎮</span>Игра</div>
+        <div class="nav-item" onclick="openInventory()"><span class="nav-icon">🎒</span>Инвентарь</div>
+        <div class="nav-item" onclick="openModal('deposit-modal')"><span class="nav-icon">💳</span>Баланс</div>
+        <div class="nav-item"><span class="nav-icon">👤</span>Профиль</div>
     </div>
 
-    <script>
-        // Инициализация Telegram WebApp (разворачивает на весь экран)
-        let tg = window.Telegram.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand(); 
-        }
+    <!-- Модальное окно: Инвентарь -->
+    <div class="modal-overlay" id="inventory-modal">
+        <div class="modal-content" style="height: 80vh;">
+            <div class="modal-header">
+                <div class="modal-title">Выберите цель</div>
+                <button class="close-btn" onclick="closeModal('inventory-modal')">✕</button>
+            </div>
+            <div class="inventory-grid" id="inventory-list">
+                <!-- JS заполнит -->
+            </div>
+        </div>
+    </div>
 
-        let isDemo = false;
+    <!-- Модальное окно: Пополнение -->
+    <div class="modal-overlay" id="deposit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Пополнение</div>
+                <button class="close-btn" onclick="closeModal('deposit-modal')">✕</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Выберите удобный способ оплаты. (В разработке)</p>
+            
+            <div class="deposit-methods">
+                <button class="deposit-btn" onclick="showToast('Оплата картой в разработке')">
+                    💳 Банковская карта
+                </button>
+                <button class="deposit-btn" onclick="showToast('Оплата СБП в разработке')">
+                    ⚡ СБП
+                </button>
+                <button class="deposit-btn" onclick="showToast('Оплата криптой в разработке')">
+                    💎 Криптовалюта <span>(TON, USDT)</span>
+                </button>
+                <button class="deposit-btn" onclick="showToast('Оплата Stars в разработке')">
+                    ⭐ Telegram Stars
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div class="toast" id="toast">Текст</div>
+
+    <script>
+        // Инициализация Telegram
+        let tg = window.Telegram.WebApp;
+        if (tg) { tg.ready(); tg.expand(); }
+
+        // --- Данные ---
+        let userBalance = 1250.00;
+        let currentMultiplier = 2;
+        let currentChance = 50;
         let isSpinning = false;
 
-        // Переключение режима Реал/Демо
-        function setMode(mode) {
-            if (isSpinning) return; // Не даем переключать во время игры
-            
-            isDemo = (mode === 'demo');
-            
-            document.getElementById('btn-real').classList.toggle('active', !isDemo);
-            document.getElementById('btn-demo').classList.toggle('active', isDemo);
-            
-            const upgradeBtn = document.getElementById('spin-btn');
-            if(isDemo) {
-                document.documentElement.style.setProperty('--accent', '#888888');
-                upgradeBtn.style.boxShadow = 'none';
-            } else {
-                document.documentElement.style.setProperty('--accent', '#ffcc00');
-                upgradeBtn.style.boxShadow = '0 4px 15px rgba(255, 204, 0, 0.3)';
-            }
+        // База доступных подарков (в реальности грузится с сервера через API)
+        const allGifts = [
+            { id: 1, name: "Мишка", price: 50, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" },
+            { id: 2, name: "Ракета", price: 250, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" },
+            { id: 3, name: "Кубок", price: 1000, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" },
+            { id: 4, name: "Корона", price: 5000, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" },
+            { id: 5, name: "Алмаз", price: 15000, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" }
+        ];
+
+        // Инвентарь игрока (то, что у него есть)
+        let userInventory = [
+            { id: 1, name: "Мишка", price: 50, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" },
+            { id: 2, name: "Ракета", price: 250, img: "https://i.ibb.co/3s6cR8Z/gift-box.png" }
+        ];
+
+        let selectedTargetGift = null;
+
+        // --- Функции UI ---
+        function updateBalanceUI() {
+            document.getElementById('balance').innerText = userBalance.toFixed(2);
         }
 
-        // Логика прокрутки (Апгрейдер)
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function openModal(id) {
+            if (isSpinning) return;
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // --- Логика Множителей ---
+        function setMultiplier(mult, btnElement) {
+            if (isSpinning) return;
+            currentMultiplier = mult;
+            currentChance = Math.floor(100 / mult);
+            
+            document.getElementById('current-multiplier').innerText = 'x' + mult;
+            document.getElementById('current-chance').innerText = 'Шанс: ' + currentChance + '%';
+
+            // Снимаем выделение со всех кнопок
+            document.querySelectorAll('.chance-btn').forEach(btn => btn.classList.remove('active'));
+            // Выделяем нажатую
+            btnElement.classList.add('active');
+        }
+
+        // --- Логика Крутки ---
         function spin() {
             if (isSpinning) return;
+            if (!selectedTargetGift) {
+                showToast("Сначала выберите цель!");
+                return;
+            }
+            
             isSpinning = true;
-            
             const wheel = document.getElementById('wheel');
-            const targetItem = document.getElementById('target-item');
-            const spinBtn = document.getElementById('spin-btn');
+            const btn = document.getElementById('spin-btn');
+            const multText = document.getElementById('current-multiplier');
+            const chanceText = document.getElementById('current-chance');
             
-            spinBtn.disabled = true;
-            spinBtn.innerText = "КРУТИМ...";
+            btn.disabled = true;
+            btn.innerText = "Крутим...";
             
-            // Сброс предыдущих результатов
-            targetItem.style.border = '2px solid #333';
-            targetItem.innerText = "Цель";
-            wheel.style.color = '#fff';
+            // Определяем судьбу
+            const win = Math.random() * 100 < currentChance;
             
-            let counter = 0;
-            // Анимация "кручения" цифр
-            const interval = setInterval(() => {
-                wheel.innerText = Math.floor(Math.random() * 100) + '%';
-                counter++;
-                
-                if (counter > 25) { // Количество кадров анимации
-                    clearInterval(interval);
+            // Анимация: 5 полных оборотов (1800) + случайный угол
+            const extraSpins = 360 * 5;
+            const randomStopAngle = Math.floor(Math.random() * 360);
+            // Сохраняем текущее состояние (чтобы крутить дальше, а не сбрасывать в 0)
+            const currentTransform = wheel.style.transform;
+            let currentDeg = 0;
+            if(currentTransform) {
+                const match = currentTransform.match(/rotate\((\d+)deg\)/);
+                if(match) currentDeg = parseInt(match[1]);
+            }
+
+            const finalRotation = currentDeg + extraSpins + randomStopAngle;
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
+
+            // Ждем окончания анимации (4 секунды)
+            setTimeout(() => {
+                if (win) {
+                    multText.innerText = 'УСПЕХ';
+                    multText.style.color = 'var(--success)';
+                    chanceText.innerText = 'Предмет улучшен!';
                     
-                    // Логика: 50% шанс успеха
-                    const success = Math.random() < 0.5; 
+                    // Обновляем баланс (демо)
+                    userBalance += 50; 
+                    updateBalanceUI();
                     
-                    if (success) {
-                        wheel.innerText = 'УСПЕХ!';
-                        wheel.style.color = '#00ff00';
-                        targetItem.style.border = '2px solid #00ff00';
-                        targetItem.innerText = 'Улучшен!';
-                    } else {
-                        wheel.innerText = 'ПРОВАЛ';
-                        wheel.style.color = '#ff0000';
-                        targetItem.style.border = '2px solid #ff0000';
-                        targetItem.innerText = 'Сгорел';
-                    }
-                    
-                    // Возвращаем кнопку в рабочее состояние
-                    spinBtn.disabled = false;
-                    spinBtn.innerText = "ПРОКАЧАТЬ";
-                    isSpinning = false;
-                    
-                    // Через 2.5 секунды сбрасываем цвета (готово к следующему разу)
-                    setTimeout(() => {
-                        wheel.innerText = '?';
-                        wheel.style.color = '#fff';
-                        targetItem.style.border = '2px solid #333';
-                        targetItem.innerText = "Цель";
-                    }, 2500);
+                    // Добавляем в инвентарь
+                    userInventory.push(selectedTargetGift);
+                } else {
+                    multText.innerText = 'ПРОВАЛ';
+                    multText.style.color = 'var(--fail)';
+                    chanceText.innerText = 'Предмет сгорел';
                 }
-            }, 50);
+
+                btn.disabled = false;
+                btn.innerText = "Прокачать";
+                isSpinning = false;
+                
+                // Возвращаем цвета через 2 секунды
+                setTimeout(() => {
+                    multText.innerText = 'x' + currentMultiplier;
+                    multText.style.color = 'var(--accent)';
+                    chanceText.innerText = 'Шанс: ' + currentChance + '%';
+                }, 2000);
+
+            }, 4000);
         }
+
+        // --- Логика Инвентаря ---
+        function openInventory() {
+            if (isSpinning) return;
+            renderInventory();
+            openModal('inventory-modal');
+        }
+
+        function renderInventory() {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = '';
+            
+            userInventory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                div.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <div class="name">${item.name}</div>
+                    <div class="price">${item.price} G</div>
+                `;
+                // При клике выбираем как цель
+                div.onclick = () => selectTarget(item);
+                list.appendChild(div);
+            });
+        }
+
+        function selectTarget(item) {
+            selectedTargetGift = item;
+            const slot = document.getElementById('target-price').parentElement;
+            
+            slot.innerHTML = `
+                <div class="slot-title">Цель</div>
+                <img src="${item.img}" class="slot-img" alt="${item.name}">
+                <div class="slot-price">${item.price} G</div>
+            `;
+            slot.style.borderColor = 'var(--accent)';
+            closeModal('inventory-modal');
+            showToast(`Выбрана цель: ${item.name}`);
+        }
+
+        // Инициализация
+        updateBalanceUI();
+
     </script>
 </body>
 </html>
