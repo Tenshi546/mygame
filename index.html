@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,11 +17,9 @@
             --text-muted: #8a8a9a;
             --accent: #ffcc00; 
             --accent-glow: rgba(255, 204, 0, 0.5);
-            --accent-dark: #cc9900;
             --success: #00ff88;
             --fail: #ff3333;
             --border: #333340;
-            --glass: rgba(26, 26, 34, 0.7);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -138,8 +137,8 @@
             top: 0; left: 0; right: 0; bottom: 0;
             pointer-events: none;
             z-index: 20;
-            /* Плавная остановка (ease-out) */
-            transition: transform 6s cubic-bezier(0.1, 0.8, 0.1, 1);
+            /* Плавная остановка (5 секунд) */
+            transition: transform 5s cubic-bezier(0.1, 0.8, 0.1, 1);
         }
 
         .arrow-visual {
@@ -462,6 +461,7 @@
             transition: 0.3s;
             opacity: 0;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
@@ -544,6 +544,20 @@
         </div>
     </div>
 
+    <!-- Модальное окно: Действия с предметом -->
+    <div class="modal-overlay" id="item-action-modal">
+        <div class="modal-content" style="height: auto; padding: 30px 20px; text-align: center;">
+            <img src="" id="action-img" style="width: 100px; height: 100px; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));">
+            <div class="modal-title" id="action-name" style="font-size: 24px; margin-bottom: 5px;">Подарок</div>
+            <div style="font-size: 18px; color: var(--accent); font-weight: 800; margin-bottom: 25px;" id="action-price">100 ₽</div>
+            
+            <div class="win-actions">
+                <button class="win-btn upgrade" onclick="setActionUpgrade()">В АПГРЕЙД</button>
+                <button class="win-btn sell" onclick="setActionSell()">ПРОДАТЬ ЗА <span id="action-sell-price">80</span> ₽</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Модальное окно: Магазин -->
     <div class="modal-overlay" id="shop-modal">
         <div class="modal-content">
@@ -604,7 +618,7 @@
         let currentChance = 50;
         let isSpinning = false;
 
-        // БАЗА ПОДАРКОВ (40+ штук, от 5 до 20000)
+        // БАЗА ПОДАРКОВ (от 5 до 20000)
         const allGifts = [
             { id: 1, name: "Кнопка", price: 5, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
             { id: 2, name: "Лист", price: 10, img: "https://cdn-icons-png.flaticon.com/512/1164/1164619.png" },
@@ -647,6 +661,7 @@
         let slotSourceGift = null;
         let slotTargetGift = null;
         let wonGift = null;
+        let selectedInventoryItem = null;
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function init() {
@@ -660,6 +675,7 @@
             let closestGift = null;
             let minDiff = Infinity;
 
+            // Ищем подарок, который максимально близок к нужной цене (или выше)
             allGifts.forEach(gift => {
                 if (gift.id === slotSourceGift.id) return;
                 const diff = Math.abs(gift.price - targetPrice);
@@ -673,6 +689,12 @@
                     closestGift = gift;
                 }
             });
+            
+            // Если подходящего подарка нет (например, самый дорогой выбрали), то цель = null
+            if (closestGift && closestGift.price < targetPrice) {
+                closestGift = null; // Нельзя улучшать на более дешевый
+            }
+
             slotTargetGift = closestGift;
         }
 
@@ -695,7 +717,7 @@
                     <div class="slot-price">${gift.price} ₽</div>
                 `;
             } else {
-                el.innerHTML = `<div class="slot-title">${title}</div><div class="slot-placeholder">+</div>`;
+                el.innerHTML = `<div class="slot-title">${title}</div><div class="slot-placeholder">${type === 'target' ? '❌' : '+'}</div>`;
             }
         }
 
@@ -742,18 +764,52 @@
                     const div = document.createElement('div');
                     div.className = 'inv-item';
                     div.innerHTML = `<img src="${item.img}"><div class="name">${item.name}</div><div class="price">${item.price} ₽</div>`;
-                    div.onclick = () => {
-                        slotSourceGift = item;
-                        updateTarget();
-                        updateUI();
-                        closeModal('inventory-modal');
-                    };
+                    div.onclick = () => showItemAction(item);
                     list.appendChild(div);
                 });
             }
             openModal('inventory-modal');
         }
 
+        // Окно действий с предметом в инвентаре
+        function showItemAction(item) {
+            selectedInventoryItem = item;
+            document.getElementById('action-img').src = item.img;
+            document.getElementById('action-name').innerText = item.name;
+            document.getElementById('action-price').innerText = item.price + ' ₽';
+            document.getElementById('action-sell-price').innerText = Math.floor(item.price * 0.8);
+            
+            closeModal('inventory-modal');
+            openModal('item-action-modal');
+        }
+
+        function setActionUpgrade() {
+            slotSourceGift = selectedInventoryItem;
+            updateTarget();
+            updateUI();
+            closeModal('item-action-modal');
+            showToast("Подарок выбран для апгрейда");
+        }
+
+        function setActionSell() {
+            const sellPrice = Math.floor(selectedInventoryItem.price * 0.8);
+            userBalance += sellPrice;
+            
+            // Удаляем из инвентаря
+            userInventory = userInventory.filter(g => g.id !== selectedInventoryItem.id);
+            
+            // Если этот подарок стоял в слоте, очищаем
+            if (slotSourceGift && slotSourceGift.id === selectedInventoryItem.id) {
+                slotSourceGift = null;
+                updateTarget();
+            }
+            
+            updateUI();
+            closeModal('item-action-modal');
+            showToast(`Продано за ${sellPrice} ₽`);
+        }
+
+        // --- МАГАЗИН ---
         function openShop() {
             if (isSpinning) return;
             const list = document.getElementById('shop-list');
@@ -781,7 +837,7 @@
                 userInventory.push(gift);
                 showToast(`Куплено: ${gift.name}`);
                 updateUI();
-                openShop(); // Обновить магазин, чтобы скрыть купленное
+                openShop(); // Обновить магазин
             }
         }
 
@@ -789,6 +845,7 @@
         function spin() {
             if (isSpinning) return;
             if (!slotSourceGift) { showToast("Сначала купите и выберите подарок!"); return; }
+            if (!slotTargetGift) { showToast("Нет подарка для улучшения на этот множитель!"); return; }
             
             isSpinning = true;
             const btn = document.getElementById('spin-btn');
@@ -800,26 +857,23 @@
             const win = Math.random() * 100 <= currentChance;
             
             // Начало желтой зоны = 180 градусов.
-            // Конец = 180 + (шанс * 3.6).
             let targetDeg = 0;
             const startDeg = 180;
             const yellowDeg = (currentChance / 100) * 360;
             
             if (win) {
-                // Стрелка падает в желтую зону
                 targetDeg = startDeg + Math.random() * yellowDeg;
             } else {
-                // Стрелка падает в серую зону
                 const grayStart = startDeg + yellowDeg;
                 const grayLength = 360 - yellowDeg;
                 targetDeg = grayStart + Math.random() * grayLength;
             }
 
-            // Делаем 6 полных оборотов (2160 градусов) для интриги
+            // Делаем 6 полных оборотов (2160 градусов)
             const finalRotation = (360 * 6) + targetDeg;
             
-            // Плавная остановка (6 секунд)
-            arrow.style.transition = `transform 6s cubic-bezier(0.1, 0.8, 0.1, 1)`;
+            // Долгая плавная остановка (5 секунд)
+            arrow.style.transition = `transform 5s cubic-bezier(0.1, 0.8, 0.1, 1)`;
             arrow.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
@@ -830,16 +884,18 @@
                 } else {
                     if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
                     showToast("ПРОВАЛ. Подарок сгорел.");
+                    
                     // Удаляем сгоревший предмет из инвентаря
                     if (slotSourceGift) {
                         userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
                     }
+                    
                     slotSourceGift = null;
                     updateTarget();
                     updateUI();
                 }
 
-                // Возврат стрелки в исходное положение (без анимации)
+                // Возврат стрелки
                 setTimeout(() => {
                     arrow.style.transition = 'none';
                     arrow.style.transform = `rotate(0deg)`;
@@ -851,7 +907,7 @@
                     }, 50);
                 }, 500);
 
-            }, 6000);
+            }, 5000);
         }
 
         // --- ЭКРАН ПОБЕДЫ ---
@@ -899,4 +955,5 @@
 
     </script>
 </body>
-    </html>
+</html>
+```
