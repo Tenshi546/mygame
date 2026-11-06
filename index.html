@@ -293,6 +293,7 @@
                     <button class="mult-btn active" onclick="setMultiplier(1.5, this)">x1.5</button>
                     <button class="mult-btn" onclick="setMultiplier(2, this)">x2</button>
                     <button class="mult-btn" onclick="setMultiplier(3, this)">x3</button>
+                    <button class="mult-btn" onclick="setMultiplier(4, this)">x4</button>
                     <button class="mult-btn" onclick="setMultiplier(5, this)">x5</button>
                     <button class="mult-btn" onclick="setMultiplier(10, this)">x10</button>
                 </div>
@@ -401,34 +402,49 @@
         let isCrashPlaying = false;
         let crashTargetPoint = 1.00;
 
-        // МАССИВ ПОДАРКОВ (Цены подобраны специально, чтобы x1.5, x2, x3, x5, x10 давали ровные числа)
-        const allGifts = [
-            { id: 1, name: "Брелок", price: 5, img: "https://cdn-icons-png.flaticon.com/512/8726/8726107.png" },
-            { id: 2, name: "Лист", price: 10, img: "https://cdn-icons-png.flaticon.com/512/1164/1164619.png" },
-            { id: 3, name: "Камень", price: 15, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
-            { id: 4, name: "Ветка", price: 20, img: "https://cdn-icons-png.flaticon.com/512/1164/1164580.png" },
-            { id: 5, name: "Монета", price: 30, img: "https://cdn-icons-png.flaticon.com/512/2171/2171990.png" },
-            { id: 6, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
-            { id: 7, name: "Гриб", price: 75, img: "https://cdn-icons-png.flaticon.com/512/1164/1164580.png" },
-            { id: 8, name: "Кристалл", price: 100, img: "https://cdn-icons-png.flaticon.com/512/3178/3178092.png" },
-            { id: 9, name: "Сердце", price: 150, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
-            { id: 10, name: "Пицца", price: 200, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png" },
-            { id: 11, name: "Огонь", price: 300, img: "https://cdn-icons-png.flaticon.com/512/785/785116.png" },
-            { id: 12, name: "Вода", price: 400, img: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" },
-            { id: 13, name: "Роза", price: 500, img: "https://cdn-icons-png.flaticon.com/512/1164/1164624.png" },
-            { id: 14, name: "Кубок", price: 750, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
-            { id: 15, name: "Кот", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
-            { id: 16, name: "Собака", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/616/616430.png" },
-            { id: 17, name: "Молния", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3194/3194766.png" },
-            { id: 18, name: "Корона", price: 3000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
-            { id: 19, name: "Череп", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
-            { id: 20, name: "Дельфин", price: 7500, img: "https://cdn-icons-png.flaticon.com/512/616/616494.png" },
-            { id: 21, name: "Призрак", price: 10000, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" },
-            { id: 22, name: "Звезда", price: 15000, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-            { id: 23, name: "Робот", price: 20000, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
-            { id: 24, name: "Ракета", price: 30000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
-            { id: 25, name: "Алмаз", price: 50000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" }
+        // ГЕНЕРАЦИЯ 250+ ПОДАРКОВ
+        // Чтобы любая цена умножалась ровно на 1.5, 2, 3, 4, 5 и 10,
+        // базовая цена должна быть кратна 30.
+        const giftImages = [
+            "https://cdn-icons-png.flaticon.com/512/8726/8726107.png",
+            "https://cdn-icons-png.flaticon.com/512/1164/1164619.png",
+            "https://cdn-icons-png.flaticon.com/512/2954/2954952.png",
+            "https://cdn-icons-png.flaticon.com/512/1164/1164580.png",
+            "https://cdn-icons-png.flaticon.com/512/2171/2171990.png",
+            "https://cdn-icons-png.flaticon.com/512/2985/2985114.png",
+            "https://cdn-icons-png.flaticon.com/512/1164/1164580.png",
+            "https://cdn-icons-png.flaticon.com/512/3178/3178092.png",
+            "https://cdn-icons-png.flaticon.com/512/833/833472.png",
+            "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"
         ];
+        
+        const giftNames = [
+            "Брелок", "Лист", "Камень", "Ветка", "Монета", "Мишка", "Гриб", "Кристалл", "Сердце", "Пицца",
+            "Огонь", "Вода", "Роза", "Кубок", "Кот", "Собака", "Молния", "Корона", "Череп", "Дельфин",
+            "Призрак", "Звезда", "Робот", "Ракета", "Алмаз", "Комета", "Планета", "Сатурн", "Галактика", "Космос"
+        ];
+
+        let allGifts = [];
+        
+        // Генерируем подарки от 30 рублей до 300 000 рублей с шагом 30
+        // (30, 60, 90, 120, 150, 180, 210, 240, 270, 300...)
+        let idCounter = 1;
+        for (let price = 30; price <= 300000; price += 30) {
+            // Выбираем случайную картинку и имя для разнообразия
+            let img = giftImages[(idCounter - 1) % giftImages.length];
+            let name = giftNames[(idCounter - 1) % giftNames.length] + " " + Math.floor(price/30);
+            
+            allGifts.push({
+                id: idCounter,
+                name: name,
+                price: price,
+                img: img
+            });
+            idCounter++;
+        }
+
+        // Добавляем стартовый подарок за 15 рублей (для проверки x1.5)
+        allGifts.unshift({ id: 0, name: "Пылинка", price: 15, img: giftImages[1] });
 
         let userInventory = []; 
         let slotSourceGift = null;
@@ -460,24 +476,21 @@
             document.getElementById('screen-crash').style.display = game === 'crash' ? 'flex' : 'none';
         }
 
-        // УЛУЧШЕННЫЙ ПОДБОР ЦЕЛИ: Теперь ищет ровно ту цену, которая должна быть.
-        // Если нет ровной цены, выдает null (нельзя улучшить).
+        // ИДЕАЛЬНЫЙ ПОДБОР ЦЕЛИ
         function updateTarget() {
             if (!slotSourceGift) { slotTargetGift = null; return; }
             
-            // Идеальная цена цели
             const targetPrice = slotSourceGift.price * currentMultiplier;
             
-            // Ищем подарок с ТАКОЙ ЖЕ ценой (или очень близкой, если дробь)
+            // Ищем подарок с точной ценой
             let foundGift = allGifts.find(g => g.price === targetPrice);
             
-            // Если с дробью (например 7.5) - округляем
-            if (!foundGift && !Number.isInteger(targetPrice)) {
-                foundGift = allGifts.find(g => g.price === Math.round(targetPrice));
+            // Если нет точной цены (например, 15 * 1.5 = 22.5), то выдаем null
+            if (!foundGift) {
+                slotTargetGift = null;
+            } else {
+                slotTargetGift = foundGift;
             }
-
-            // Если нашли — ставим, если нет — null (кнопка выдаст ошибку)
-            slotTargetGift = foundGift || null;
         }
 
         function updateUI() {
@@ -499,15 +512,10 @@
             }
         }
 
-        // ФИКС ОТРИСОВКИ КОЛЕСА (Желтый сектор начинается строго с 12 часов и идет по часовой)
         function drawWheel() {
             const wheel = document.getElementById('wheel');
             const deg = (currentChance / 100) * 360; 
-            
-            wheel.style.background = `conic-gradient(
-                var(--accent) 0deg ${deg}deg, 
-                var(--surface) ${deg}deg 360deg
-            )`;
+            wheel.style.background = `conic-gradient(var(--accent) 0deg ${deg}deg, var(--surface) ${deg}deg 360deg)`;
         }
 
         function setMultiplier(mult, btn) {
@@ -524,10 +532,9 @@
         function spinUpgrade() {
             if (isSpinning) return;
             
-            // ПРОВЕРКА НА ОШИБКИ (Самый дорогой скин или нет цели)
             if (!slotSourceGift) { showToast("Выберите подарок для апгрейда!"); return; }
             if (!slotTargetGift) { 
-                showToast("Этот подарок нельзя улучшить на этот множитель (нет цели)!"); 
+                showToast("Этот подарок нельзя улучшить на этот множитель (нет точной цели)!"); 
                 return; 
             }
 
@@ -799,4 +806,4 @@
         init();
     </script>
 </body>
-</html>
+    </html>
