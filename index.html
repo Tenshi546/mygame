@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,14 +10,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
 
         :root { 
-            --bg: #0a0a0c; 
-            --surface: #15151a;
-            --surface-light: #202028;
+            --bg: #0b0b0f; 
+            --surface: #16161c;
+            --surface-light: #22222a;
             --text: #ffffff; 
-            --text-muted: #7a7a85;
-            --accent: #ffcc00; 
-            --accent-glow: rgba(255, 204, 0, 0.4);
-            --purple: #8a2be2;
+            --text-muted: #88889a;
+            --accent: #ff3366; 
+            --accent-glow: rgba(255, 51, 102, 0.4);
             --success: #00ff88;
             --fail: #ff3333;
             --border: #2a2a35;
@@ -34,7 +34,7 @@
             height: 100vh; 
             overflow: hidden; 
             user-select: none;
-            background-image: radial-gradient(circle at 50% 0%, #1e1e28 0%, var(--bg) 70%);
+            background-image: radial-gradient(circle at 50% 0%, #1e1e28 0%, var(--bg) 80%);
         }
         
         /* Верхняя панель */
@@ -48,7 +48,7 @@
         
         .logo { 
             font-weight: 900; 
-            font-size: 22px; 
+            font-size: 24px; 
             letter-spacing: 1px; 
             text-transform: uppercase;
             background: linear-gradient(90deg, #fff, #aaa);
@@ -76,7 +76,7 @@
 
         .btn-add-balance {
             background: var(--accent);
-            color: #000;
+            color: #fff;
             width: 36px;
             height: 36px;
             border-radius: 12px;
@@ -105,69 +105,81 @@
             position: relative;
         }
         
-        /* Колесо Крутки */
-        .wheel-container {
+        /* Колесо Крутки (Круглая рулетка) */
+        .wheel-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 320px;
-            height: 200px;
+            width: 280px;
+            height: 280px;
             margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Сама рулетка с секторами */
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid var(--surface);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8) inset, 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+            background: conic-gradient(
+                #1e1e24 0deg 45deg, 
+                #2a2a35 45deg 90deg, 
+                #1e1e24 90deg 135deg, 
+                #2a2a35 135deg 180deg, 
+                #1e1e24 180deg 225deg, 
+                #2a2a35 225deg 270deg, 
+                #1e1e24 270deg 315deg, 
+                #2a2a35 315deg 360deg
+            );
             overflow: hidden;
-            border-radius: 20px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 120%;
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-            z-index: 10;
-        }
-        .wheel-pointer::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 50%;
-            transform: translateX(-50%);
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid var(--accent);
-        }
-
-        .wheel-track {
             display: flex;
             align-items: center;
-            height: 100%;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            will-change: transform;
+            justify-content: center;
         }
 
-        .wheel-item {
-            width: 90px;
-            height: 120px;
-            margin: 0 5px;
-            border-radius: 12px;
-            background: var(--surface);
-            border: 1px solid var(--border);
+        /* Иконки на колесе (расставляем по кругу через JS) */
+        .wheel-gift-icon {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
+
+        /* Стрелочка (указатель) */
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid var(--accent);
+            z-index: 10;
+            filter: drop-shadow(0 4px 10px var(--accent-glow));
+        }
+
+        /* Центральный круг (заглушка) */
+        .wheel-center {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: var(--bg);
+            border-radius: 50%;
+            border: 4px solid var(--surface-light);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            position: relative;
+            z-index: 5;
+            box-shadow: 0 0 20px rgba(0,0,0,0.9);
         }
-
-        .wheel-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
-        .wheel-item .price { font-size: 12px; font-weight: 800; color: var(--accent); }
 
         /* Слоты */
         .slots-container {
@@ -190,21 +202,21 @@
             text-align: center;
             position: relative;
             transition: 0.3s;
-            min-height: 140px;
+            min-height: 130px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             cursor: pointer;
         }
 
         .slot-box:active { transform: scale(0.97); }
-        .slot-box.target-active { border-color: var(--purple); box-shadow: 0 0 20px rgba(138,43,226,0.3); }
+        .slot-box.target-active { border-color: var(--accent); box-shadow: 0 0 20px rgba(255,51,102,0.2); }
 
-        .slot-title { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+        .slot-title { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
         
         .slot-img {
-            width: 65px; height: 65px;
+            width: 55px; height: 55px;
             object-fit: contain;
             margin-bottom: 8px;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6));
         }
 
         .slot-price {
@@ -216,23 +228,22 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            color: var(--accent);
         }
-        
-        .slot-price span { color: var(--accent); font-size: 11px; }
 
         .slot-placeholder {
-            width: 65px; height: 65px;
+            width: 55px; height: 55px;
             border: 2px dashed #444;
-            border-radius: 12px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 24px;
             color: #444;
             margin-bottom: 8px;
         }
 
-        /* Центральная зона шансов */
+        /* Панель управления */
         .center-controls {
             width: 100%;
             max-width: 360px;
@@ -247,14 +258,14 @@
         }
 
         .chance-display {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             color: var(--accent);
             text-shadow: 0 0 20px var(--accent-glow);
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
         .chance-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -275,18 +286,18 @@
             background: var(--surface-light);
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 12px 0;
+            padding: 10px 0;
             border-radius: 10px;
             font-weight: 800;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 15px;
+            font-size: 14px;
             font-family: inherit;
         }
 
         .mult-btn.active {
             background: var(--accent);
-            color: #000;
+            color: #fff;
             border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent-glow);
         }
@@ -294,13 +305,13 @@
         /* Кнопка действия */
         .action-btn { 
             width: 100%; 
-            padding: 18px; 
-            background: linear-gradient(180deg, #ffe066 0%, #ffcc00 100%);
+            padding: 16px; 
+            background: linear-gradient(180deg, #ff4d79 0%, #ff3366 100%);
             border: none; 
             border-radius: 14px; 
             font-weight: 900; 
             font-size: 18px; 
-            color: #000; 
+            color: #fff; 
             cursor: pointer; 
             box-shadow: 0 8px 25px var(--accent-glow);
             transition: 0.1s;
@@ -323,7 +334,7 @@
             display: flex; 
             justify-content: space-around; 
             padding: 12px 10px 25px 10px; 
-            background: rgba(15, 15, 20, 0.95);
+            background: rgba(11, 11, 15, 0.95);
             backdrop-filter: blur(15px);
             border-top: 1px solid var(--border); 
             z-index: 50;
@@ -422,11 +433,11 @@
         .inv-item:active { transform: scale(0.95); border-color: var(--accent); }
 
         .inv-item img {
-            width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px;
+            width: 60px; height: 60px; object-fit: contain; margin-bottom: 10px;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
         
-        .inv-item .name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .inv-item .name { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
         .inv-item .price { font-size: 14px; color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 3px;}
 
         /* Тост */
@@ -457,18 +468,22 @@
     <div class="top-bar">
         <div class="logo">GIFT<span>UP</span></div>
         <div class="balance-container">
-            <div class="balance"><span class="currency">G</span> <span id="balance">1250</span></div>
+            <div class="balance"><span class="currency">₽</span> <span id="balance">1250</span></div>
             <button class="btn-add-balance" onclick="openModal('deposit-modal')">+</button>
         </div>
     </div>
 
     <div class="main-content">
         
-        <!-- Колесо (Лента) -->
-        <div class="wheel-container" id="wheel-container">
+        <!-- Круглое Колесо -->
+        <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
-            <div class="wheel-track" id="wheel-track">
-                <!-- JS заполнит ленту -->
+            <div class="wheel" id="wheel">
+                <!-- Иконки будут добавлены через JS -->
+            </div>
+            <div class="wheel-center">
+                <span style="font-size: 24px; font-weight: 900; color: var(--text);">GIFT</span>
+                <span style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">UP</span>
             </div>
         </div>
 
@@ -496,7 +511,7 @@
                 <button class="mult-btn" onclick="setMultiplier(10, this)">x10</button>
             </div>
 
-            <button class="action-btn" id="spin-btn" onclick="spin()">ПРОКАЧАТЬ</button>
+            <button class="action-btn" id="spin-btn" onclick="spin()">КРУТИТЬ</button>
         </div>
     </div>
 
@@ -505,7 +520,7 @@
         <div class="nav-item active"><span class="nav-icon">🎮</span>ИГРА</div>
         <div class="nav-item" onclick="openInventory('source')"><span class="nav-icon">🎁</span>ИНВЕНТАРЬ</div>
         <div class="nav-item" onclick="openModal('deposit-modal')"><span class="nav-icon">💳</span>БАЛАНС</div>
-        <div class="nav-item"><span class="nav-icon">👤</span>ПРОФИЛЬ</div>
+        <div class="nav-item" onclick="showToast('Профиль в разработке')"><span class="nav-icon">👤</span>ПРОФИЛЬ</div>
     </div>
 
     <!-- Модальное окно: Инвентарь / Магазин -->
@@ -525,22 +540,22 @@
     <div class="modal-overlay" id="deposit-modal">
         <div class="modal-content" style="height: auto; max-height: 80vh;">
             <div class="modal-header">
-                <div class="modal-title">Пополнение</div>
+                <div class="modal-title">Пополнение баланса</div>
                 <button class="close-btn" onclick="closeModal('deposit-modal')">✕</button>
             </div>
             <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px; text-align: center;">Выберите способ оплаты</p>
             
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('В разработке')">
+                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('Оплата картой в разработке')">
                     <span>💳 Банковская карта</span> <span>→</span>
                 </button>
-                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('В разработке')">
+                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('СБП в разработке')">
                     <span>⚡ СБП</span> <span>→</span>
                 </button>
-                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('В разработке')">
+                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('Stars в разработке')">
                     <span>⭐ Telegram Stars</span> <span>→</span>
                 </button>
-                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('В разработке')">
+                <button class="inv-item" style="flex-direction: row; justify-content: space-between; padding: 15px 20px;" onclick="showToast('Крипта в разработке')">
                     <span>💎 Криптовалюта</span> <span>→</span>
                 </button>
             </div>
@@ -561,8 +576,7 @@
         let isSpinning = false;
         let activeSlot = 'source';
 
-        // МАССИВ ИЗ 30 ПОДАРКОВ (имитация реальных Telegram NFT)
-        // Картинки взяты с надежного CDN, чтобы не было синих квадратов
+        // МАССИВ ИЗ 24 ПОДАРКОВ (Стилизованные NFT)
         const allGifts = [
             { id: 1, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
             { id: 2, name: "Сердце", price: 100, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
@@ -587,13 +601,7 @@
             { id: 21, name: "Звезда", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
             { id: 22, name: "Планета", price: 4000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" },
             { id: 23, name: "Космос", price: 6000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212620.png" },
-            { id: 24, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
-            { id: 25, name: "Призрак", price: 900, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" },
-            { id: 26, name: "Тыква", price: 120, img: "https://cdn-icons-png.flaticon.com/512/3193/3193007.png" },
-            { id: 27, name: "Череп", price: 700, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
-            { id: 28, name: "Меч", price: 1100, img: "https://cdn-icons-png.flaticon.com/512/3112/3112947.png" },
-            { id: 29, name: "Щит", price: 1400, img: "https://cdn-icons-png.flaticon.com/512/3112/3112956.png" },
-            { id: 30, name: "Замок", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" }
+            { id: 24, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" }
         ];
 
         let userInventory = [
@@ -603,7 +611,7 @@
         ];
 
         let slotSourceGift = userInventory[0];
-        let slotTargetGift = allGifts[3]; // Кубок (500)
+        let slotTargetGift = allGifts[3]; // Кубок
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function init() {
@@ -620,13 +628,13 @@
 
         function renderSlot(type, gift) {
             const el = document.getElementById(`slot-${type}`);
-            const title = type === 'source' ? "ВЫБЕРИТЕ ПОДАРОК" : "ВЫБЕРИТЕ ЦЕЛЬ";
+            const title = type === 'source' ? "ВАШ ПОДАРОК" : "ЦЕЛЬ";
             
             if (gift) {
                 el.innerHTML = `
                     <div class="slot-title">${title}</div>
                     <img src="${gift.img}" class="slot-img">
-                    <div class="slot-price">${gift.price} <span>G</span></div>
+                    <div class="slot-price">${gift.price} ₽</div>
                 `;
             } else {
                 el.innerHTML = `
@@ -636,21 +644,28 @@
             }
         }
 
-        // --- РЕНДЕР КОЛЕСА ---
+        // --- РЕНДЕР КРУГЛОГО КОЛЕСА ---
         function renderWheel() {
-            const track = document.getElementById('wheel-track');
-            track.innerHTML = '';
+            const wheel = document.getElementById('wheel');
+            wheel.innerHTML = ''; // Очищаем
             
-            // Генерируем 50 элементов для бесконечной прокрутки
-            for(let i=0; i<50; i++) {
-                const gift = allGifts[Math.floor(Math.random() * allGifts.length)];
-                const item = document.createElement('div');
-                item.className = 'wheel-item';
-                item.innerHTML = `
-                    <img src="${gift.img}">
-                    <div class="price">${gift.price} G</div>
-                `;
-                track.appendChild(item);
+            const numIcons = 12; // Количество иконок по кругу
+            const radius = 95; // Радиус, на котором будут иконки
+            
+            for (let i = 0; i < numIcons; i++) {
+                const gift = allGifts[i % allGifts.length];
+                const angle = (i * (360 / numIcons)) * (Math.PI / 180);
+                
+                // Вычисляем позицию
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                const img = document.createElement('img');
+                img.src = gift.img;
+                img.className = 'wheel-gift-icon';
+                img.style.transform = `translate(${x}px, ${y}px) rotate(${i * (360/numIcons)}deg)`;
+                
+                wheel.appendChild(img);
             }
         }
 
@@ -690,7 +705,7 @@
                 div.innerHTML = `
                     <img src="${item.img}">
                     <div class="name">${item.name}</div>
-                    <div class="price">${item.price} <span>G</span></div>
+                    <div class="price">${item.price} ₽</div>
                 `;
                 
                 // Нельзя выбрать один и тот же предмет целью
@@ -718,21 +733,18 @@
             
             isSpinning = true;
             const btn = document.getElementById('spin-btn');
-            const track = document.getElementById('wheel-track');
-            const container = document.getElementById('wheel-container');
+            const wheel = document.getElementById('wheel');
             
             btn.disabled = true;
             btn.innerText = "КРУТИМ...";
             
-            // Вычисляем сколько пикселей нужно прокрутить
-            // Один элемент = 100px (90 ширины + 10 отступы)
-            const itemWidth = 100; 
+            // Случайный угол остановки (от 1800 до 5400 градусов, чтобы сделать несколько оборотов)
+            const extraSpins = 360 * 5; 
+            const randomStopAngle = Math.floor(Math.random() * 360);
+            const finalRotation = extraSpins + randomStopAngle;
             
-            // Визуально прокручиваем на 30-40 элементов вперед
-            const spins = 30 + Math.floor(Math.random() * 10);
-            const targetX = -(spins * itemWidth);
-            
-            track.style.transform = `translateX(${targetX}px)`;
+            // Применяем вращение
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             // Ждем окончания анимации (4 секунды)
             setTimeout(() => {
@@ -744,7 +756,6 @@
                     if (!userInventory.find(g => g.id === slotTargetGift.id)) {
                         userInventory.push(slotTargetGift);
                     }
-                    userBalance += 50;
                 } else {
                     showToast("ПРОВАЛ. Подарок сгорел.");
                     slotSourceGift = null;
@@ -752,16 +763,15 @@
 
                 updateUI();
 
-                // Возвращаем ленту в исходное положение без анимации
+                // Возвращаем колесо в исходное положение
                 setTimeout(() => {
-                    track.style.transition = 'none';
-                    track.style.transform = `translateX(0px)`;
+                    wheel.style.transition = 'none';
+                    wheel.style.transform = `rotate(0deg)`;
                     
-                    // Через мгновение возвращаем анимацию (чтобы следующий раз крутилось плавно)
                     setTimeout(() => {
-                        track.style.transition = 'transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)';
+                        wheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)';
                         btn.disabled = false;
-                        btn.innerText = "ПРОКАЧАТЬ";
+                        btn.innerText = "КРУТИТЬ";
                         isSpinning = false;
                     }, 50);
                 }, 500);
@@ -786,3 +796,4 @@
     </script>
 </body>
 </html>
+```
