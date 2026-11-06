@@ -401,18 +401,33 @@
         let isCrashPlaying = false;
         let crashTargetPoint = 1.00;
 
-        // НОВЫЕ ПОДАРКИ С НАДЕЖНЫМИ КАРТИНКАМИ
+        // МАССИВ ПОДАРКОВ (Цены подобраны специально, чтобы x1.5, x2, x3, x5, x10 давали ровные числа)
         const allGifts = [
             { id: 1, name: "Брелок", price: 5, img: "https://cdn-icons-png.flaticon.com/512/8726/8726107.png" },
-            { id: 2, name: "Кубик", price: 10, img: "https://cdn-icons-png.flaticon.com/512/2093/2093598.png" },
-            { id: 3, name: "Монета", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2171/2171990.png" },
-            { id: 4, name: "Кристалл", price: 100, img: "https://cdn-icons-png.flaticon.com/512/3178/3178092.png" },
-            { id: 5, name: "Роза", price: 200, img: "https://cdn-icons-png.flaticon.com/512/1164/1164624.png" },
-            { id: 6, name: "Кубок", price: 500, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
-            { id: 7, name: "Корона", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
-            { id: 8, name: "Ракета", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
-            { id: 9, name: "Алмаз", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" },
-            { id: 10, name: "Планета", price: 10000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" }
+            { id: 2, name: "Лист", price: 10, img: "https://cdn-icons-png.flaticon.com/512/1164/1164619.png" },
+            { id: 3, name: "Камень", price: 15, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
+            { id: 4, name: "Ветка", price: 20, img: "https://cdn-icons-png.flaticon.com/512/1164/1164580.png" },
+            { id: 5, name: "Монета", price: 30, img: "https://cdn-icons-png.flaticon.com/512/2171/2171990.png" },
+            { id: 6, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
+            { id: 7, name: "Гриб", price: 75, img: "https://cdn-icons-png.flaticon.com/512/1164/1164580.png" },
+            { id: 8, name: "Кристалл", price: 100, img: "https://cdn-icons-png.flaticon.com/512/3178/3178092.png" },
+            { id: 9, name: "Сердце", price: 150, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
+            { id: 10, name: "Пицца", price: 200, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png" },
+            { id: 11, name: "Огонь", price: 300, img: "https://cdn-icons-png.flaticon.com/512/785/785116.png" },
+            { id: 12, name: "Вода", price: 400, img: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" },
+            { id: 13, name: "Роза", price: 500, img: "https://cdn-icons-png.flaticon.com/512/1164/1164624.png" },
+            { id: 14, name: "Кубок", price: 750, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
+            { id: 15, name: "Кот", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
+            { id: 16, name: "Собака", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/616/616430.png" },
+            { id: 17, name: "Молния", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3194/3194766.png" },
+            { id: 18, name: "Корона", price: 3000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
+            { id: 19, name: "Череп", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
+            { id: 20, name: "Дельфин", price: 7500, img: "https://cdn-icons-png.flaticon.com/512/616/616494.png" },
+            { id: 21, name: "Призрак", price: 10000, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" },
+            { id: 22, name: "Звезда", price: 15000, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
+            { id: 23, name: "Робот", price: 20000, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
+            { id: 24, name: "Ракета", price: 30000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
+            { id: 25, name: "Алмаз", price: 50000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" }
         ];
 
         let userInventory = []; 
@@ -445,23 +460,24 @@
             document.getElementById('screen-crash').style.display = game === 'crash' ? 'flex' : 'none';
         }
 
-        // ИСПРАВЛЕННЫЙ ПОДБОР ЦЕЛИ (Ищет ближайший подарок к нужной сумме)
+        // УЛУЧШЕННЫЙ ПОДБОР ЦЕЛИ: Теперь ищет ровно ту цену, которая должна быть.
+        // Если нет ровной цены, выдает null (нельзя улучшить).
         function updateTarget() {
             if (!slotSourceGift) { slotTargetGift = null; return; }
-            const targetPrice = slotSourceGift.price * currentMultiplier;
-            let closestGift = null, minDiff = Infinity;
             
-            allGifts.forEach(gift => {
-                if (gift.id === slotSourceGift.id) return; // Нельзя улучшать на самого себя
-                const diff = Math.abs(gift.price - targetPrice);
-                
-                // Ищем самый близкий по цене (и выше, и ниже)
-                if (diff < minDiff) { 
-                    minDiff = diff; 
-                    closestGift = gift; 
-                }
-            });
-            slotTargetGift = closestGift;
+            // Идеальная цена цели
+            const targetPrice = slotSourceGift.price * currentMultiplier;
+            
+            // Ищем подарок с ТАКОЙ ЖЕ ценой (или очень близкой, если дробь)
+            let foundGift = allGifts.find(g => g.price === targetPrice);
+            
+            // Если с дробью (например 7.5) - округляем
+            if (!foundGift && !Number.isInteger(targetPrice)) {
+                foundGift = allGifts.find(g => g.price === Math.round(targetPrice));
+            }
+
+            // Если нашли — ставим, если нет — null (кнопка выдаст ошибку)
+            slotTargetGift = foundGift || null;
         }
 
         function updateUI() {
@@ -486,11 +502,8 @@
         // ФИКС ОТРИСОВКИ КОЛЕСА (Желтый сектор начинается строго с 12 часов и идет по часовой)
         function drawWheel() {
             const wheel = document.getElementById('wheel');
-            // Вычисляем процент заливки. Для 75% это 270 градусов.
             const deg = (currentChance / 100) * 360; 
             
-            // conic-gradient(from 0deg) начинает рисовать с 12 часов (сверху) и идет по часовой стрелке.
-            // Это самый надежный способ отрисовки.
             wheel.style.background = `conic-gradient(
                 var(--accent) 0deg ${deg}deg, 
                 var(--surface) ${deg}deg 360deg
@@ -509,35 +522,36 @@
 
         // --- ЛОГИКА АПГРЕЙДА ---
         function spinUpgrade() {
-            if (isSpinning || !slotSourceGift || !slotTargetGift) return;
+            if (isSpinning) return;
+            
+            // ПРОВЕРКА НА ОШИБКИ (Самый дорогой скин или нет цели)
+            if (!slotSourceGift) { showToast("Выберите подарок для апгрейда!"); return; }
+            if (!slotTargetGift) { 
+                showToast("Этот подарок нельзя улучшить на этот множитель (нет цели)!"); 
+                return; 
+            }
+
             isSpinning = true;
             const btn = document.getElementById('spin-btn');
             const arrow = document.getElementById('arrow-wrapper');
             btn.disabled = true; btn.innerText = "КРУТИМ...";
             
             const win = Math.random() * 100 <= currentChance;
-            
-            // Визуальный расчет: стрелка должна указать на желтую (0 - deg) или серую (deg - 360) зону
             const yellowDeg = (currentChance / 100) * 360;
             let targetDeg = 0;
             
             if (win) {
-                // Останавливаем в желтой зоне (от 10 до yellowDeg - 10 градусов, чтобы не на границе)
                 targetDeg = 10 + Math.random() * (yellowDeg - 20);
             } else {
-                // Останавливаем в серой зоне
                 targetDeg = yellowDeg + 10 + Math.random() * (360 - yellowDeg - 20);
             }
 
-            // Крутим на 5 полных оборотов (1800 градусов) + нужный угол
             arrow.style.transition = `transform 5s cubic-bezier(0.15, 0.85, 0.15, 1)`;
             arrow.style.transform = `rotate(${360 * 5 + targetDeg}deg)`;
 
             setTimeout(() => {
-                // 1. Сначала удаляем предмет, который крутили
                 userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
                 
-                // 2. Если победа - добавляем новый
                 if (win) {
                     wonGift = { ...slotTargetGift };
                     userInventory.push(wonGift);
@@ -546,7 +560,6 @@
                     showToast("ПРОВАЛ. Подарок сгорел.");
                 }
                 
-                // 3. Очищаем слот и обновляем
                 slotSourceGift = null;
                 updateTarget();
                 updateUI();
@@ -786,4 +799,4 @@
         init();
     </script>
 </body>
-                                                            </html>
+</html>
