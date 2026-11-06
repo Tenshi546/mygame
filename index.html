@@ -44,12 +44,7 @@
             z-index: 10;
         }
         
-        .logo { 
-            font-weight: 900; 
-            font-size: 24px; 
-            letter-spacing: 1px; 
-            text-transform: uppercase;
-        }
+        .logo { font-weight: 900; font-size: 24px; letter-spacing: 1px; }
         .logo span { color: var(--accent); }
         
         .balance-container { display: flex; align-items: center; gap: 10px; }
@@ -69,7 +64,7 @@
         
         .balance .currency { color: var(--accent); font-size: 14px; }
 
-        .btn-add-balance {
+        .btn-icon {
             background: var(--accent);
             color: #000;
             width: 36px;
@@ -78,7 +73,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 900;
             cursor: pointer;
             border: none;
@@ -86,7 +81,7 @@
             transition: 0.2s;
         }
         
-        .btn-add-balance:active { transform: scale(0.9); }
+        .btn-icon:active { transform: scale(0.9); }
 
         /* Основной контент */
         .main-content { 
@@ -104,7 +99,7 @@
         .wheel-wrapper {
             position: relative;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             aspect-ratio: 1 / 1;
             margin: 15px 0;
             display: flex;
@@ -112,21 +107,7 @@
             justify-content: center;
         }
 
-        /* Стрелка */
-        .wheel-pointer {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 35px solid var(--accent);
-            z-index: 20;
-            filter: drop-shadow(0 4px 10px var(--accent-glow));
-        }
-
-        /* Само колесо */
+        /* Неподвижное колесо */
         .wheel {
             width: 100%;
             height: 100%;
@@ -134,18 +115,40 @@
             border: 4px solid var(--surface-light);
             box-shadow: 0 0 40px rgba(0,0,0,0.8) inset, 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            /* Фон будет меняться через JS (conic-gradient) */
             background: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
+            /* Угол начала желтого сектора (слева-снизу) */
+            --start-deg: 225deg;
+        }
+
+        /* Вращающаяся стрелка */
+        .arrow-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 20;
+            /* Анимация вращения будет задаваться через JS */
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+
+        .arrow-visual {
+            position: absolute;
+            top: -20px; /* Выносим стрелку за пределы колеса */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 35px solid var(--accent);
+            filter: drop-shadow(0 0 10px var(--accent));
         }
 
         .wheel-center {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: var(--bg);
             border-radius: 50%;
             border: 4px solid var(--surface-light);
@@ -157,7 +160,7 @@
             box-shadow: 0 0 25px rgba(0,0,0,0.9);
         }
 
-        /* Слоты (Ваш подарок и Авто-цель) */
+        /* Слоты */
         .slots-container {
             display: flex;
             gap: 15px;
@@ -178,7 +181,7 @@
             text-align: center;
             position: relative;
             transition: 0.3s;
-            min-height: 130px;
+            min-height: 120px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             cursor: pointer;
         }
@@ -186,10 +189,10 @@
         .slot-box:active { transform: scale(0.97); }
         .slot-box.target-active { border-color: var(--accent); box-shadow: 0 0 20px rgba(255,204,0,0.15); cursor: default; }
 
-        .slot-title { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+        .slot-title { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase;}
         
         .slot-img {
-            width: 55px; height: 55px;
+            width: 50px; height: 50px;
             object-fit: contain;
             margin-bottom: 8px;
             filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6));
@@ -197,18 +200,15 @@
 
         .slot-price {
             background: rgba(0,0,0,0.5);
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 4px;
             color: var(--accent);
         }
 
         .slot-placeholder {
-            width: 55px; height: 55px;
+            width: 50px; height: 50px;
             border: 2px dashed #444;
             border-radius: 50%;
             display: flex;
@@ -234,14 +234,14 @@
         }
 
         .chance-display {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             color: var(--accent);
             text-shadow: 0 0 20px var(--accent-glow);
             margin-bottom: 2px;
         }
         .chance-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -249,7 +249,6 @@
             font-weight: 700;
         }
 
-        /* Панель множителей */
         .multiplier-panel {
             display: flex;
             gap: 8px;
@@ -262,12 +261,12 @@
             background: var(--surface-light);
             border: 1px solid var(--border);
             color: var(--text-muted);
-            padding: 12px 0;
+            padding: 10px 0;
             border-radius: 10px;
             font-weight: 800;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 15px;
+            font-size: 14px;
             font-family: inherit;
         }
 
@@ -278,7 +277,6 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* Кнопка действия */
         .action-btn { 
             width: 100%; 
             padding: 16px; 
@@ -292,7 +290,6 @@
             box-shadow: 0 8px 25px var(--accent-glow);
             transition: 0.1s;
             text-transform: uppercase;
-            letter-spacing: 1px;
             font-family: inherit;
         }
         
@@ -322,7 +319,6 @@
             flex-direction: column;
             align-items: center;
             gap: 5px;
-            transition: 0.2s;
         }
         
         .nav-item.active { color: var(--accent); }
@@ -395,43 +391,87 @@
             text-align: center;
             cursor: pointer;
             transition: 0.2s;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
         
-        .inv-item:active { transform: scale(0.95); border-color: var(--accent); }
+        .inv-item:active { transform: scale(0.95); }
 
         .inv-item img {
             width: 60px; height: 60px; object-fit: contain; margin-bottom: 10px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
         
         .inv-item .name { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
-        .inv-item .price { font-size: 14px; color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 3px;}
+        .inv-item .price { font-size: 14px; color: var(--accent); font-weight: 800; margin-bottom: 10px;}
+
+        .buy-btn {
+            width: 100%;
+            padding: 8px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .buy-btn:active { background: #fff; }
+        .buy-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
 
         /* Экран победы */
-        .win-screen {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-        .win-screen h2 { font-size: 28px; color: var(--success); margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
-        .win-screen img { width: 120px; height: 120px; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8)); }
+        .win-screen { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .win-screen h2 { font-size: 28px; color: var(--success); margin-bottom: 20px; }
+        .win-screen img { width: 120px; height: 120px; margin-bottom: 15px; }
         .win-screen .prize-name { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
         .win-screen .prize-price { font-size: 18px; color: var(--accent); font-weight: 800; margin-bottom: 30px; }
         
         .win-actions { display: flex; gap: 10px; width: 100%; max-width: 300px; }
-        .win-btn { 
-            flex: 1; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; border: none; font-family: inherit;
-        }
-        .win-btn.upgrade { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+        .win-btn { flex: 1; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; border: none; font-family: inherit; }
+        .win-btn.upgrade { background: var(--accent); color: #000; }
         .win-btn.sell { background: var(--surface-light); color: #fff; border: 1px solid var(--border); }
+
+        /* Настройки */
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row span { font-weight: 600; font-size: 15px; }
+        
+        /* Переключатель (Switch) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--surface-light);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--border);
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); border-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
         /* Тост */
         .toast {
@@ -448,10 +488,7 @@
             z-index: 200;
             transition: 0.3s;
             opacity: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            white-space: nowrap;
         }
-        
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     </style>
@@ -462,7 +499,8 @@
         <div class="logo">GIFT<span>UP</span></div>
         <div class="balance-container">
             <div class="balance"><span class="currency">₽</span> <span id="balance">1250</span></div>
-            <button class="btn-add-balance" onclick="openModal('deposit-modal')">+</button>
+            <button class="btn-icon" onclick="openModal('deposit-modal')">+</button>
+            <button class="btn-icon" style="background: var(--surface-light); color: #fff;" onclick="openModal('settings-modal')">⚙️</button>
         </div>
     </div>
 
@@ -470,23 +508,23 @@
         
         <!-- Колесо -->
         <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
             <div class="wheel" id="wheel">
                 <div class="wheel-center">
                     <span style="font-size: 24px; font-weight: 900; color: var(--text);">GIFT</span>
                     <span style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">UP</span>
                 </div>
             </div>
+            <div class="arrow-wrapper" id="arrow-wrapper">
+                <div class="arrow-visual"></div>
+            </div>
         </div>
 
         <!-- Слоты -->
         <div class="slots-container">
-            <!-- Левый слот (выбор) -->
             <div class="slot-box" id="slot-source" onclick="openInventory()">
                 <!-- JS -->
             </div>
             
-            <!-- Правый слот (авто-цель) -->
             <div class="slot-box target-active" id="slot-target">
                 <!-- JS -->
             </div>
@@ -512,9 +550,9 @@
     <!-- Нижнее меню -->
     <div class="bottom-nav">
         <div class="nav-item active"><span class="nav-icon">🎮</span>ИГРА</div>
-        <div class="nav-item" onclick="openInventory()"><span class="nav-icon">🎁</span>ИНВЕНТАРЬ</div>
+        <div class="nav-item" onclick="openInventory()"><span class="nav-icon">🎒</span>ИНВЕНТАРЬ</div>
+        <div class="nav-item" onclick="openShop()"><span class="nav-icon">🛒</span>МАГАЗИН</div>
         <div class="nav-item" onclick="openModal('deposit-modal')"><span class="nav-icon">💳</span>БАЛАНС</div>
-        <div class="nav-item" onclick="showToast('Профиль в разработке')"><span class="nav-icon">👤</span>ПРОФИЛЬ</div>
     </div>
 
     <!-- Модальное окно: Инвентарь -->
@@ -524,9 +562,18 @@
                 <div class="modal-title">Ваш инвентарь</div>
                 <button class="close-btn" onclick="closeModal('inventory-modal')">✕</button>
             </div>
-            <div class="inventory-grid" id="inventory-list">
-                <!-- JS -->
+            <div class="inventory-grid" id="inventory-list"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Магазин -->
+    <div class="modal-overlay" id="shop-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Магазин</div>
+                <button class="close-btn" onclick="closeModal('shop-modal')">✕</button>
             </div>
+            <div class="inventory-grid" id="shop-list"></div>
         </div>
     </div>
 
@@ -538,7 +585,6 @@
                 <img src="" id="win-img" alt="Win">
                 <div class="prize-name" id="win-name">Подарок</div>
                 <div class="prize-price" id="win-price">100 ₽</div>
-                
                 <div class="win-actions">
                     <button class="win-btn upgrade" onclick="actionUpgrade()">В АПГРЕЙД</button>
                     <button class="win-btn sell" onclick="actionSell()">ПРОДАТЬ ЗА <span id="sell-price">80</span> ₽</button>
@@ -549,7 +595,7 @@
 
     <!-- Модальное окно: Пополнение -->
     <div class="modal-overlay" id="deposit-modal">
-        <div class="modal-content" style="height: auto; max-height: 80vh;">
+        <div class="modal-content" style="height: auto;">
             <div class="modal-header">
                 <div class="modal-title">Пополнение</div>
                 <button class="close-btn" onclick="closeModal('deposit-modal')">✕</button>
@@ -565,12 +611,47 @@
         </div>
     </div>
 
-    <!-- Тост -->
+    <!-- Модальное окно: Настройки -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content" style="height: auto;">
+            <div class="modal-header">
+                <div class="modal-title">Настройки</div>
+                <button class="close-btn" onclick="closeModal('settings-modal')">✕</button>
+            </div>
+            
+            <div class="settings-row">
+                <span>Быстрая крутка (1 сек)</span>
+                <label class="switch">
+                    <input type="checkbox" id="fast-spin-toggle" onchange="toggleFastSpin()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="settings-row">
+                <span>Вибрация при выигрыше</span>
+                <label class="switch">
+                    <input type="checkbox" id="vibration-toggle" checked onchange="toggleVibration()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast">Текст</div>
 
     <script>
         let tg = window.Telegram.WebApp;
         if (tg) { tg.ready(); tg.expand(); }
+
+        // --- НАСТРОЙКИ ---
+        let isFastSpin = false;
+        let isVibration = true;
+
+        function toggleFastSpin() {
+            isFastSpin = document.getElementById('fast-spin-toggle').checked;
+        }
+        function toggleVibration() {
+            isVibration = document.getElementById('vibration-toggle').checked;
+        }
 
         // --- ДАННЫЕ ---
         let userBalance = 1250;
@@ -578,85 +659,76 @@
         let currentChance = 50;
         let isSpinning = false;
 
-        // БАЗА ПОДАРКОВ (30 штук, отсортированы по цене)
+        // БАЗА ПОДАРКОВ (40+ штук)
         const allGifts = [
-            { id: 1, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
-            { id: 2, name: "Сердце", price: 100, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
-            { id: 3, name: "Пицца", price: 150, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png" },
-            { id: 4, name: "Огонь", price: 200, img: "https://cdn-icons-png.flaticon.com/512/785/785116.png" },
-            { id: 5, name: "Ракета", price: 250, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
-            { id: 6, name: "Кот", price: 300, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
-            { id: 7, name: "Собака", price: 400, img: "https://cdn-icons-png.flaticon.com/512/616/616430.png" },
-            { id: 8, name: "Молния", price: 450, img: "https://cdn-icons-png.flaticon.com/512/3194/3194766.png" },
-            { id: 9, name: "Кубок", price: 500, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
-            { id: 10, name: "Снежинка", price: 600, img: "https://cdn-icons-png.flaticon.com/512/3194/3194789.png" },
-            { id: 11, name: "Череп", price: 700, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
-            { id: 12, name: "Дельфин", price: 800, img: "https://cdn-icons-png.flaticon.com/512/616/616494.png" },
-            { id: 13, name: "Призрак", price: 900, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" },
-            { id: 14, name: "Корона", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
-            { id: 15, name: "Меч", price: 1100, img: "https://cdn-icons-png.flaticon.com/512/3112/3112947.png" },
-            { id: 16, name: "Бабочка", price: 1200, img: "https://cdn-icons-png.flaticon.com/512/616/616565.png" },
-            { id: 17, name: "Щит", price: 1400, img: "https://cdn-icons-png.flaticon.com/512/3112/3112956.png" },
-            { id: 18, name: "Звезда", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-            { id: 19, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
-            { id: 20, name: "Замок", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" },
-            { id: 21, name: "Алмаз", price: 2500, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" },
-            { id: 22, name: "Дракон", price: 3000, img: "https://cdn-icons-png.flaticon.com/512/3468/3468081.png" },
-            { id: 23, name: "Единорог", price: 3500, img: "https://cdn-icons-png.flaticon.com/512/3468/3468103.png" },
-            { id: 24, name: "Планета", price: 4000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" },
-            { id: 25, name: "Феникс", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/3468/3468115.png" },
-            { id: 26, name: "Космос", price: 6000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212620.png" }
+            { id: 1, name: "Лист", price: 20, img: "https://cdn-icons-png.flaticon.com/512/1164/1164619.png" },
+            { id: 2, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
+            { id: 3, name: "Гриб", price: 60, img: "https://cdn-icons-png.flaticon.com/512/1164/1164580.png" },
+            { id: 4, name: "Тыква", price: 80, img: "https://cdn-icons-png.flaticon.com/512/3193/3193007.png" },
+            { id: 5, name: "Сердце", price: 100, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
+            { id: 6, name: "Пицца", price: 150, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png" },
+            { id: 7, name: "Огонь", price: 200, img: "https://cdn-icons-png.flaticon.com/512/785/785116.png" },
+            { id: 8, name: "Вода", price: 220, img: "https://cdn-icons-png.flaticon.com/512/3105/3105807.png" },
+            { id: 9, name: "Ракета", price: 250, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
+            { id: 10, name: "Кот", price: 300, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
+            { id: 11, name: "Собака", price: 400, img: "https://cdn-icons-png.flaticon.com/512/616/616430.png" },
+            { id: 12, name: "Молния", price: 450, img: "https://cdn-icons-png.flaticon.com/512/3194/3194766.png" },
+            { id: 13, name: "Кубок", price: 500, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
+            { id: 14, name: "Снежинка", price: 600, img: "https://cdn-icons-png.flaticon.com/512/3194/3194789.png" },
+            { id: 15, name: "Череп", price: 700, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
+            { id: 16, name: "Дельфин", price: 800, img: "https://cdn-icons-png.flaticon.com/512/616/616494.png" },
+            { id: 17, name: "Призрак", price: 900, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" },
+            { id: 18, name: "Корона", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
+            { id: 19, name: "Меч", price: 1100, img: "https://cdn-icons-png.flaticon.com/512/3112/3112947.png" },
+            { id: 20, name: "Бабочка", price: 1200, img: "https://cdn-icons-png.flaticon.com/512/616/616565.png" },
+            { id: 21, name: "Щит", price: 1400, img: "https://cdn-icons-png.flaticon.com/512/3112/3112956.png" },
+            { id: 22, name: "Звезда", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
+            { id: 23, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
+            { id: 24, name: "Замок", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" },
+            { id: 25, name: "Алмаз", price: 2500, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" },
+            { id: 26, name: "Дракон", price: 3000, img: "https://cdn-icons-png.flaticon.com/512/3468/3468081.png" },
+            { id: 27, name: "Единорог", price: 3500, img: "https://cdn-icons-png.flaticon.com/512/3468/3468103.png" },
+            { id: 28, name: "Планета", price: 4000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" },
+            { id: 29, name: "Феникс", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/3468/3468115.png" },
+            { id: 30, name: "Космос", price: 6000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212620.png" },
+            { id: 31, name: "Комета", price: 6500, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
+            { id: 32, name: "Сатурн", price: 7000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" },
+            { id: 33, name: "Галактика", price: 8000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212620.png" },
+            { id: 34, name: "Трон", price: 9000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
+            { id: 35, name: "Скипетр", price: 10000, img: "https://cdn-icons-png.flaticon.com/512/3112/3112947.png" }
         ];
 
-        // Инвентарь игрока
-        let userInventory = [
-            allGifts[0], // Мишка 50
-            allGifts[1], // Сердце 100
-            allGifts[4]  // Ракета 250
-        ];
-
-        let slotSourceGift = userInventory[0]; // Выбранный предмет
-        let slotTargetGift = null; // Автоматическая цель
+        let userInventory = [ allGifts[1], allGifts[4], allGifts[8] ]; // Стартовый набор
+        let slotSourceGift = userInventory[0];
+        let slotTargetGift = null;
         let wonGift = null;
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function init() {
-            updateTarget(); // Сразу считаем цель
+            updateTarget();
             updateUI();
         }
 
-        // Логика автоматического подбора цели
         function updateTarget() {
-            if (!slotSourceGift) {
-                slotTargetGift = null;
-                return;
-            }
+            if (!slotSourceGift) { slotTargetGift = null; return; }
             
             const targetPrice = slotSourceGift.price * currentMultiplier;
-            
-            // Ищем подарок, который максимально близок к нужной цене (или выше, если нет точного)
-            // Сортируем по разнице цен
             let closestGift = null;
             let minDiff = Infinity;
 
             allGifts.forEach(gift => {
-                // Нельзя выбирать тот же самый подарок
                 if (gift.id === slotSourceGift.id) return;
-                
                 const diff = Math.abs(gift.price - targetPrice);
-                // Приоритет подаркам, которые дороже или равны
                 const isAbove = gift.price >= targetPrice;
                 
                 if (isAbove && diff < minDiff) {
                     minDiff = diff;
                     closestGift = gift;
                 } else if (!closestGift && diff < minDiff) {
-                    // Если ничего не нашли выше, берем ближайший снизу
                     minDiff = diff;
                     closestGift = gift;
                 }
             });
-
             slotTargetGift = closestGift;
         }
 
@@ -679,23 +751,23 @@
                     <div class="slot-price">${gift.price} ₽</div>
                 `;
             } else {
-                el.innerHTML = `
-                    <div class="slot-title">${title}</div>
-                    <div class="slot-placeholder">+</div>
-                `;
+                el.innerHTML = `<div class="slot-title">${title}</div><div class="slot-placeholder">+</div>`;
             }
         }
 
         // --- ОТРИСОВКА КОЛЕСА ---
         function drawWheel() {
             const wheel = document.getElementById('wheel');
-            // Желтая часть (шанс). Отсчет идет от 12 часов (0 градусов) по часовой стрелке.
             const deg = (currentChance / 100) * 360;
             
-            // conic-gradient(from 0deg, цвет1 0deg Xdeg, цвет2 Xdeg 360deg)
+            // Начинаем с 225 градусов (левый нижний угол) и идем по часовой стрелке
+            const start = 225;
+            const end = start + deg;
+            
             wheel.style.background = `conic-gradient(
-                var(--accent) 0deg ${deg}deg, 
-                var(--surface-light) ${deg}deg 360deg
+                var(--surface-light) 0deg ${start}deg, 
+                var(--accent) ${start}deg ${end}deg, 
+                var(--surface-light) ${end}deg 360deg
             )`;
         }
 
@@ -714,23 +786,12 @@
 
         function openInventory() {
             if (isSpinning) return;
-            renderInventoryList();
-            openModal('inventory-modal');
-        }
-
-        function renderInventoryList() {
             const list = document.getElementById('inventory-list');
             list.innerHTML = '';
-            
             userInventory.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'inv-item';
-                div.innerHTML = `
-                    <img src="${item.img}">
-                    <div class="name">${item.name}</div>
-                    <div class="price">${item.price} ₽</div>
-                `;
-                
+                div.innerHTML = `<img src="${item.img}"><div class="name">${item.name}</div><div class="price">${item.price} ₽</div>`;
                 div.onclick = () => {
                     slotSourceGift = item;
                     updateTarget();
@@ -739,72 +800,108 @@
                 };
                 list.appendChild(div);
             });
+            openModal('inventory-modal');
+        }
+
+        function openShop() {
+            if (isSpinning) return;
+            const list = document.getElementById('shop-list');
+            list.innerHTML = '';
+            allGifts.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                const canAfford = userBalance >= item.price;
+                div.innerHTML = `
+                    <img src="${item.img}">
+                    <div class="name">${item.name}</div>
+                    <div class="price">${item.price} ₽</div>
+                    <button class="buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyGift(${item.id}, event)">${canAfford ? 'КУПИТЬ' : 'НЕТ СРЕДСТВ'}</button>
+                `;
+                list.appendChild(div);
+            });
+            openModal('shop-modal');
+        }
+
+        function buyGift(id, event) {
+            event.stopPropagation();
+            const gift = allGifts.find(g => g.id === id);
+            if (userBalance >= gift.price) {
+                userBalance -= gift.price;
+                userInventory.push(gift);
+                showToast(`Куплено: ${gift.name}`);
+                updateUI();
+                openShop(); // Обновить магазин
+            }
         }
 
         // --- АНИМАЦИЯ КРУТКИ ---
         function spin() {
             if (isSpinning) return;
-            if (!slotSourceGift) {
-                showToast("Выберите подарок!");
-                return;
-            }
+            if (!slotSourceGift) { showToast("Выберите подарок!"); return; }
             
             isSpinning = true;
             const btn = document.getElementById('spin-btn');
-            const wheel = document.getElementById('wheel');
+            const arrow = document.getElementById('arrow-wrapper');
             
             btn.disabled = true;
             btn.innerText = "КРУТИМ...";
             
-            // Определяем победу
             const win = Math.random() * 100 <= currentChance;
             
-            // Вычисляем угол для стрелки
-            // Если победа - останавливаем в желтой зоне (от 0 до currentChance градусов)
-            // Если проигрыш - в темной зоне
-            let targetAngle = 0;
+            // Логика вращения стрелки:
+            // Стрелка должна указать на желтую зону (если победа) или на серую (если проигрыш)
+            // Начало желтой зоны = 225 градусов. Конец = 225 + (шанс * 3.6).
+            let targetDeg = 0;
+            const startDeg = 225;
+            const yellowDeg = (currentChance / 100) * 360;
+            
             if (win) {
-                targetAngle = Math.random() * (currentChance / 100 * 360);
+                // Стрелка должна попасть между 225 и (225 + yellowDeg)
+                targetDeg = startDeg + Math.random() * yellowDeg;
             } else {
-                const startDark = (currentChance / 100 * 360);
-                targetAngle = startDark + Math.random() * (360 - startDark);
+                // Стрелка попадает в серую зону
+                const grayStart = startDeg + yellowDeg;
+                const grayLength = 360 - yellowDeg;
+                targetDeg = grayStart + Math.random() * grayLength;
             }
 
-            // Крутим на 5 полных оборотов + нужный угол
-            // Так как стрелка сверху, а колесо крутится, чтобы стрелка попала в targetAngle, 
-            // колесо должно повернуться на (360 - targetAngle)
-            const finalRotation = (360 * 5) + (360 - targetAngle);
+            // Крутим 5 раз (1800 градусов) + конечный угол
+            const finalRotation = (360 * 5) + targetDeg;
             
-            wheel.style.transform = `rotate(${finalRotation}deg)`;
+            // Устанавливаем длительность анимации
+            arrow.style.transition = `transform ${isFastSpin ? '1s' : '4s'} cubic-bezier(0.1, 0.7, 0.1, 1)`;
+            arrow.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
                 if (win) {
+                    if (isVibration && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
                     wonGift = { ...slotTargetGift };
                     showWinScreen(wonGift);
                 } else {
+                    if (isVibration && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
                     showToast("ПРОВАЛ. Подарок сгорел.");
-                    slotSourceGift = null;
                     // Удаляем сгоревший предмет из инвентаря
-                    userInventory = userInventory.filter(g => g.id !== slotSourceGift?.id);
+                    if (slotSourceGift) {
+                        userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
+                    }
+                    slotSourceGift = null;
+                    updateTarget();
                     updateUI();
                 }
 
-                // Возврат колеса
+                // Возврат в исходное положение (без анимации)
                 setTimeout(() => {
-                    wheel.style.transition = 'none';
-                    wheel.style.transform = `rotate(0deg)`;
+                    arrow.style.transition = 'none';
+                    arrow.style.transform = `rotate(0deg)`;
                     
                     setTimeout(() => {
-                        wheel.style.transition = 'transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)';
                         btn.disabled = false;
                         btn.innerText = "КРУТИТЬ";
                         isSpinning = false;
-                        updateTarget();
-                        updateUI();
                     }, 50);
-                }, 500);
+                }, isFastSpin ? 300 : 1000);
 
-            }, 4000);
+            }, isFastSpin ? 1000 : 4000);
         }
 
         // --- ЭКРАН ПОБЕДЫ ---
@@ -813,16 +910,13 @@
             document.getElementById('win-name').innerText = gift.name;
             document.getElementById('win-price').innerText = gift.price + ' ₽';
             document.getElementById('sell-price').innerText = Math.floor(gift.price * 0.8);
-            
             openModal('win-modal');
         }
 
         function actionUpgrade() {
-            // Добавляем в инвентарь
             if (!userInventory.find(g => g.id === wonGift.id)) {
                 userInventory.push(wonGift);
             }
-            // Ставим выигранный подарок в слот
             slotSourceGift = wonGift;
             updateTarget();
             updateUI();
@@ -832,11 +926,6 @@
         function actionSell() {
             const sellPrice = Math.floor(wonGift.price * 0.8);
             userBalance += sellPrice;
-            
-            // Очищаем старый подарок, так как он "сгорел" при крутке
-            userInventory = userInventory.filter(g => g.id !== slotSourceGift?.id);
-            
-            // Слот пустой
             slotSourceGift = null;
             updateTarget();
             updateUI();
@@ -855,9 +944,7 @@
             setTimeout(() => t.classList.remove('show'), 2500);
         }
 
-        // Запуск
         init();
-
     </script>
 </body>
-    </html>
+                                                                                             </html>
