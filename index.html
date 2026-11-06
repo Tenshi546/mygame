@@ -16,11 +16,9 @@
             --text-muted: #8b8b9e;
             --accent: #ffcc00; 
             --accent-glow: rgba(255, 204, 0, 0.4);
-            --accent-dark: #cc9900;
             --success: #00ff88;
             --fail: #ff3333;
             --border: #2a2a35;
-            --glass: rgba(20, 20, 25, 0.7);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -136,7 +134,6 @@
             overflow: hidden;
         }
 
-        /* Вращающаяся стрелка */
         .arrow-wrapper {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -530,7 +527,6 @@
 
     <div class="main-content">
         
-        <!-- Колесо -->
         <div class="wheel-wrapper">
             <div class="wheel" id="wheel">
                 <div class="wheel-center">
@@ -543,18 +539,11 @@
             </div>
         </div>
 
-        <!-- Слоты -->
         <div class="slots-container">
-            <div class="slot-box" id="slot-source" onclick="openInventory()">
-                <!-- JS -->
-            </div>
-            
-            <div class="slot-box target-active" id="slot-target">
-                <!-- JS -->
-            </div>
+            <div class="slot-box" id="slot-source" onclick="openInventory()"></div>
+            <div class="slot-box target-active" id="slot-target"></div>
         </div>
 
-        <!-- Управление -->
         <div class="center-controls">
             <div class="chance-display" id="chance-value">50.00%</div>
             <div class="chance-label">ШАНС УСПЕХА</div>
@@ -571,7 +560,6 @@
         </div>
     </div>
 
-    <!-- Нижнее меню -->
     <div class="bottom-nav">
         <div class="nav-item active"><span class="nav-icon">🎮</span>ИГРА</div>
         <div class="nav-item" onclick="openInventory()"><span class="nav-icon">🎒</span>ИНВЕНТАРЬ</div>
@@ -579,7 +567,6 @@
         <div class="nav-item" onclick="openProfile()"><span class="nav-icon">👤</span>ПРОФИЛЬ</div>
     </div>
 
-    <!-- Модальное окно: Профиль -->
     <div class="modal-overlay" id="profile-modal">
         <div class="modal-content" style="height: auto; padding: 30px 20px;">
             <div class="modal-header">
@@ -598,23 +585,19 @@
         </div>
     </div>
 
-    <!-- Модальное окно: Инвентарь -->
     <div class="modal-overlay" id="inventory-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Ваш инвентарь</div>
                 <button class="close-btn" onclick="closeModal('inventory-modal')">✕</button>
             </div>
-            <div class="inventory-grid" id="inventory-list">
-                <!-- JS -->
-            </div>
+            <div class="inventory-grid" id="inventory-list"></div>
             <div id="empty-inventory" style="text-align: center; color: var(--text-muted); margin-top: 50px; display: none;">
                 Инвентарь пуст. Купите подарки в магазине!
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно: Действия с предметом (Инвентарь) -->
     <div class="modal-overlay" id="item-action-modal">
         <div class="modal-content" style="height: auto; padding: 30px 20px; text-align: center;">
             <img src="" id="action-img" style="width: 100px; height: 100px; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));">
@@ -628,20 +611,16 @@
         </div>
     </div>
 
-    <!-- Модальное окно: Магазин -->
     <div class="modal-overlay" id="shop-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Магазин</div>
                 <button class="close-btn" onclick="closeModal('shop-modal')">✕</button>
             </div>
-            <div class="inventory-grid" id="shop-list">
-                <!-- JS -->
-            </div>
+            <div class="inventory-grid" id="shop-list"></div>
         </div>
     </div>
 
-    <!-- Модальное окно: Экран Победы -->
     <div class="modal-overlay" id="win-modal">
         <div class="modal-content" style="height: auto; padding: 40px 20px; text-align: center;">
             <div class="win-screen">
@@ -657,7 +636,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно: Пополнение -->
     <div class="modal-overlay" id="deposit-modal">
         <div class="modal-content" style="height: auto;">
             <div class="modal-header">
@@ -675,7 +653,6 @@
         </div>
     </div>
 
-    <!-- Тост -->
     <div class="toast" id="toast">Текст</div>
 
     <script>
@@ -683,12 +660,11 @@
         if (tg) { tg.ready(); tg.expand(); }
 
         // --- ДАННЫЕ ---
-        let userBalance = 0; // Начальный баланс 0
+        let userBalance = 0;
         let currentMultiplier = 2;
         let currentChance = 50;
         let isSpinning = false;
 
-        // БАЗА ПОДАРКОВ (от 5 до 20000)
         const allGifts = [
             { id: 1, name: "Кнопка", price: 5, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
             { id: 2, name: "Лист", price: 10, img: "https://cdn-icons-png.flaticon.com/512/1164/1164619.png" },
@@ -733,24 +709,39 @@
         let wonGift = null;
         let selectedInventoryItem = null;
 
-        // --- ПРОМОКОДЫ ---
-        // 10 промокодов на разные суммы
         const promoCodes = {
-            "START": 500,
-            "GIFTUP": 1000,
-            "LUCKY": 150,
-            "DROP": 200,
-            "WIN": 250,
-            "MONEY": 300,
-            "FAST": 400,
-            "ROCKET": 750,
-            "BOSS": 1500,
-            "TOP": 2000
+            "START": 500, "GIFTUP": 1000, "LUCKY": 150, "DROP": 200, "WIN": 250,
+            "MONEY": 300, "FAST": 400, "ROCKET": 750, "BOSS": 1500, "TOP": 2000
         };
-        let usedPromos = []; // Массив использованных кодов
+        let usedPromos = []; 
+
+        // --- СОХРАНЕНИЕ (LocalStorage) ---
+        function saveData() {
+            const data = {
+                balance: userBalance,
+                inventory: userInventory,
+                usedPromos: usedPromos
+            };
+            localStorage.setItem('giftup_data', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('giftup_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    userBalance = data.balance || 0;
+                    userInventory = data.inventory || [];
+                    usedPromos = data.usedPromos || [];
+                } catch (e) {
+                    console.error("Ошибка загрузки данных", e);
+                }
+            }
+        }
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function init() {
+            loadData();
             updateUI();
         }
 
@@ -806,7 +797,6 @@
             }
         }
 
-        // --- ОТРИСОВКА КОЛЕСА ---
         function drawWheel() {
             const wheel = document.getElementById('wheel');
             const deg = (currentChance / 100) * 360;
@@ -820,7 +810,6 @@
             )`;
         }
 
-        // --- ВЗАИМОДЕЙСТВИЕ ---
         function setMultiplier(mult, btn) {
             if (isSpinning) return;
             currentMultiplier = mult;
@@ -842,15 +831,8 @@
             const input = document.getElementById('promo-code');
             const code = input.value.trim().toUpperCase();
             
-            if (!code) {
-                showToast("Введите код!");
-                return;
-            }
-
-            if (usedPromos.includes(code)) {
-                showToast("Этот код уже использован!");
-                return;
-            }
+            if (!code) { showToast("Введите код!"); return; }
+            if (usedPromos.includes(code)) { showToast("Этот код уже использован!"); return; }
 
             if (promoCodes[code] !== undefined) {
                 const reward = promoCodes[code];
@@ -858,6 +840,7 @@
                 usedPromos.push(code);
                 input.value = '';
                 updateUI();
+                saveData(); // Сохраняем прогресс
                 showToast(`Успешно! +${reward} ₽`);
             } else {
                 showToast("Неверный код!");
@@ -890,7 +873,7 @@
             document.getElementById('action-img').src = item.img;
             document.getElementById('action-name').innerText = item.name;
             document.getElementById('action-price').innerText = item.price + ' ₽';
-            document.getElementById('action-sell-price').innerText = item.price; // Без комиссии
+            document.getElementById('action-sell-price').innerText = item.price;
             
             closeModal('inventory-modal');
             openModal('item-action-modal');
@@ -904,24 +887,21 @@
         }
 
         function setActionSell() {
-            const sellPrice = selectedInventoryItem.price; // Без комиссии
+            const sellPrice = selectedInventoryItem.price;
             userBalance += sellPrice;
             
-            // Удаляем из инвентаря
             userInventory = userInventory.filter(g => g.id !== selectedInventoryItem.id);
-            
-            // Если этот подарок стоял в слоте, очищаем
             if (slotSourceGift && slotSourceGift.id === selectedInventoryItem.id) {
                 slotSourceGift = null;
                 updateTarget();
             }
             
             updateUI();
+            saveData(); // Сохраняем прогресс
             closeModal('item-action-modal');
             showToast(`Продано за ${sellPrice} ₽`);
         }
 
-        // --- МАГАЗИН ---
         function openShop() {
             if (isSpinning) return;
             const list = document.getElementById('shop-list');
@@ -947,13 +927,13 @@
             if (userBalance >= gift.price) {
                 userBalance -= gift.price;
                 userInventory.push(gift);
-                showToast(`Куплено: ${gift.name}`);
                 updateUI();
+                saveData(); // Сохраняем прогресс
+                showToast(`Куплено: ${gift.name}`);
                 openShop(); 
             }
         }
 
-        // --- АНИМАЦИЯ КРУТКИ ---
         function spin() {
             if (isSpinning) return;
             if (!slotSourceGift) { showToast("Выберите подарок для апгрейда!"); return; }
@@ -986,7 +966,7 @@
             arrow.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
-                // В любом случае удаляем исходный подарок из инвентаря (он либо сгорел, либо улучшен)
+                // Удаляем исходный подарок из инвентаря (он либо сгорел, либо улучшен)
                 if (slotSourceGift) {
                     userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
                 }
@@ -1009,6 +989,8 @@
                     updateTarget();
                     updateUI();
                 }
+                
+                saveData(); // Сохраняем прогресс
 
                 setTimeout(() => {
                     arrow.style.transition = 'none';
@@ -1024,17 +1006,15 @@
             }, 5000);
         }
 
-        // --- ЭКРАН ПОБЕДЫ ---
         function showWinScreen(gift) {
             document.getElementById('win-img').src = gift.img;
             document.getElementById('win-name').innerText = gift.name;
             document.getElementById('win-price').innerText = gift.price + ' ₽';
-            document.getElementById('win-sell-price').innerText = gift.price; // Без комиссии
+            document.getElementById('win-sell-price').innerText = gift.price;
             openModal('win-modal');
         }
 
         function actionWinUpgrade() {
-            // Подарок уже в инвентаре (добавили при победе), просто ставим в слот
             slotSourceGift = wonGift;
             updateTarget();
             updateUI();
@@ -1043,18 +1023,17 @@
         }
 
         function actionWinSell() {
-            const sellPrice = wonGift.price; // Без комиссии
+            const sellPrice = wonGift.price;
             userBalance += sellPrice;
             
-            // Удаляем из инвентаря, так как продали
             userInventory = userInventory.filter(g => g.id !== wonGift.id);
             
             updateUI();
+            saveData(); // Сохраняем прогресс
             closeModal('win-modal');
             showToast(`Продано за ${sellPrice} ₽`);
         }
 
-        // --- УТИЛИТЫ ---
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
