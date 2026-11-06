@@ -15,12 +15,13 @@
             --surface-light: #22222a;
             --text: #ffffff; 
             --text-muted: #88889a;
-            --accent: #ff3366; 
-            --accent-glow: rgba(255, 51, 102, 0.4);
+            --accent: #ffcc00; 
+            --accent-glow: rgba(255, 204, 0, 0.4);
             --success: #00ff88;
             --fail: #ff3333;
             --border: #2a2a35;
             --glass: rgba(30, 30, 40, 0.6);
+            --purple: #9d4edd;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -76,7 +77,7 @@
 
         .btn-add-balance {
             background: var(--accent);
-            color: #fff;
+            color: #000;
             width: 36px;
             height: 36px;
             border-radius: 12px;
@@ -105,7 +106,7 @@
             position: relative;
         }
         
-        /* Колесо Крутки (Круглая рулетка) */
+        /* Колесо Крутки */
         .wheel-wrapper {
             position: relative;
             width: 280px;
@@ -116,42 +117,6 @@
             justify-content: center;
         }
 
-        /* Сама рулетка с секторами */
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 6px solid var(--surface);
-            box-shadow: 0 0 30px rgba(0,0,0,0.8) inset, 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            background: conic-gradient(
-                #1e1e24 0deg 45deg, 
-                #2a2a35 45deg 90deg, 
-                #1e1e24 90deg 135deg, 
-                #2a2a35 135deg 180deg, 
-                #1e1e24 180deg 225deg, 
-                #2a2a35 225deg 270deg, 
-                #1e1e24 270deg 315deg, 
-                #2a2a35 315deg 360deg
-            );
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Иконки на колесе (расставляем по кругу через JS) */
-        .wheel-gift-icon {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            z-index: 2;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-        }
-
-        /* Стрелочка (указатель) */
         .wheel-pointer {
             position: absolute;
             top: -15px;
@@ -165,7 +130,31 @@
             filter: drop-shadow(0 4px 10px var(--accent-glow));
         }
 
-        /* Центральный круг (заглушка) */
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid var(--surface);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8) inset, 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+            overflow: hidden;
+            /* 8 секторов: 4 желтых, 4 темных */
+            background: conic-gradient(
+                var(--accent) 0deg 45deg, 
+                #1e1e24 45deg 90deg, 
+                var(--accent) 90deg 135deg, 
+                #1e1e24 135deg 180deg, 
+                var(--accent) 180deg 225deg, 
+                #1e1e24 225deg 270deg, 
+                var(--accent) 270deg 315deg, 
+                #1e1e24 315deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .wheel-center {
             position: absolute;
             width: 100px;
@@ -208,7 +197,7 @@
         }
 
         .slot-box:active { transform: scale(0.97); }
-        .slot-box.target-active { border-color: var(--accent); box-shadow: 0 0 20px rgba(255,51,102,0.2); }
+        .slot-box.target-active { border-color: var(--accent); box-shadow: 0 0 20px rgba(255,204,0,0.2); }
 
         .slot-title { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
         
@@ -297,7 +286,7 @@
 
         .mult-btn.active {
             background: var(--accent);
-            color: #fff;
+            color: #000;
             border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent-glow);
         }
@@ -306,12 +295,12 @@
         .action-btn { 
             width: 100%; 
             padding: 16px; 
-            background: linear-gradient(180deg, #ff4d79 0%, #ff3366 100%);
+            background: linear-gradient(180deg, #ffdd33 0%, #ffcc00 100%);
             border: none; 
             border-radius: 14px; 
             font-weight: 900; 
             font-size: 18px; 
-            color: #fff; 
+            color: #000; 
             cursor: pointer; 
             box-shadow: 0 8px 25px var(--accent-glow);
             transition: 0.1s;
@@ -440,6 +429,27 @@
         .inv-item .name { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
         .inv-item .price { font-size: 14px; color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 3px;}
 
+        /* Экран победы */
+        .win-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .win-screen h2 { font-size: 28px; color: var(--success); margin-bottom: 20px; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
+        .win-screen img { width: 120px; height: 120px; margin-bottom: 15px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8)); }
+        .win-screen .prize-name { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
+        .win-screen .prize-price { font-size: 18px; color: var(--accent); font-weight: 800; margin-bottom: 30px; }
+        
+        .win-actions { display: flex; gap: 10px; width: 100%; max-width: 300px; }
+        .win-btn { 
+            flex: 1; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; border: none; font-family: inherit;
+        }
+        .win-btn.upgrade { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+        .win-btn.sell { background: var(--surface-light); color: #fff; border: 1px solid var(--border); }
+
         /* Тост */
         .toast {
             position: fixed;
@@ -479,11 +489,10 @@
         <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
             <div class="wheel" id="wheel">
-                <!-- Иконки будут добавлены через JS -->
-            </div>
-            <div class="wheel-center">
-                <span style="font-size: 24px; font-weight: 900; color: var(--text);">GIFT</span>
-                <span style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">UP</span>
+                <div class="wheel-center">
+                    <span style="font-size: 24px; font-weight: 900; color: var(--text);">GIFT</span>
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">UP</span>
+                </div>
             </div>
         </div>
 
@@ -536,6 +545,23 @@
         </div>
     </div>
 
+    <!-- Модальное окно: Экран Победы -->
+    <div class="modal-overlay" id="win-modal">
+        <div class="modal-content" style="height: auto; padding: 40px 20px;">
+            <div class="win-screen">
+                <h2>ВЫИГРЫШ!</h2>
+                <img src="" id="win-img" alt="Win">
+                <div class="prize-name" id="win-name">Подарок</div>
+                <div class="prize-price" id="win-price">100 ₽</div>
+                
+                <div class="win-actions">
+                    <button class="win-btn upgrade" onclick="actionUpgrade()">В АПГРЕЙД</button>
+                    <button class="win-btn sell" onclick="actionSell()">ПРОДАТЬ ЗА <span id="sell-price">100</span> ₽</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Модальное окно: Пополнение -->
     <div class="modal-overlay" id="deposit-modal">
         <div class="modal-content" style="height: auto; max-height: 80vh;">
@@ -576,7 +602,7 @@
         let isSpinning = false;
         let activeSlot = 'source';
 
-        // МАССИВ ИЗ 24 ПОДАРКОВ (Стилизованные NFT)
+        // МАССИВ ПОДАРКОВ (Картинки взяты из открытых источников)
         const allGifts = [
             { id: 1, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
             { id: 2, name: "Сердце", price: 100, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
@@ -601,7 +627,13 @@
             { id: 21, name: "Звезда", price: 1500, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
             { id: 22, name: "Планета", price: 4000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" },
             { id: 23, name: "Космос", price: 6000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212620.png" },
-            { id: 24, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" }
+            { id: 24, name: "Робот", price: 1800, img: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png" },
+            { id: 25, name: "Тыква", price: 120, img: "https://cdn-icons-png.flaticon.com/512/3193/3193007.png" },
+            { id: 26, name: "Череп", price: 700, img: "https://cdn-icons-png.flaticon.com/512/2954/2954952.png" },
+            { id: 27, name: "Меч", price: 1100, img: "https://cdn-icons-png.flaticon.com/512/3112/3112947.png" },
+            { id: 28, name: "Щит", price: 1400, img: "https://cdn-icons-png.flaticon.com/512/3112/3112956.png" },
+            { id: 29, name: "Замок", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" },
+            { id: 30, name: "Призрак", price: 900, img: "https://cdn-icons-png.flaticon.com/512/3325/3325133.png" }
         ];
 
         let userInventory = [
@@ -612,11 +644,11 @@
 
         let slotSourceGift = userInventory[0];
         let slotTargetGift = allGifts[3]; // Кубок
+        let wonGift = null; // Переменная для хранения выигранного подарка
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function init() {
             updateUI();
-            renderWheel();
         }
 
         function updateUI() {
@@ -641,31 +673,6 @@
                     <div class="slot-title">${title}</div>
                     <div class="slot-placeholder">+</div>
                 `;
-            }
-        }
-
-        // --- РЕНДЕР КРУГЛОГО КОЛЕСА ---
-        function renderWheel() {
-            const wheel = document.getElementById('wheel');
-            wheel.innerHTML = ''; // Очищаем
-            
-            const numIcons = 12; // Количество иконок по кругу
-            const radius = 95; // Радиус, на котором будут иконки
-            
-            for (let i = 0; i < numIcons; i++) {
-                const gift = allGifts[i % allGifts.length];
-                const angle = (i * (360 / numIcons)) * (Math.PI / 180);
-                
-                // Вычисляем позицию
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                
-                const img = document.createElement('img');
-                img.src = gift.img;
-                img.className = 'wheel-gift-icon';
-                img.style.transform = `translate(${x}px, ${y}px) rotate(${i * (360/numIcons)}deg)`;
-                
-                wheel.appendChild(img);
             }
         }
 
@@ -738,30 +745,47 @@
             btn.disabled = true;
             btn.innerText = "КРУТИМ...";
             
-            // Случайный угол остановки (от 1800 до 5400 градусов, чтобы сделать несколько оборотов)
-            const extraSpins = 360 * 5; 
-            const randomStopAngle = Math.floor(Math.random() * 360);
-            const finalRotation = extraSpins + randomStopAngle;
+            // Определяем победу (по шансу)
+            const win = Math.random() * 100 <= currentChance;
+            
+            // Визуальная анимация
+            // Колесо разделено на 8 секторов. Желтые сектора (победа) - это 0, 90, 180, 270 градусов (и их диапазоны).
+            // Стрелка сверху. Чтобы выпал желтый сектор, колесо должно остановиться так, чтобы стрелка смотрела на желтый.
+            
+            let targetAngle = 0;
+            if (win) {
+                // Выбираем случайный желтый сектор: 0, 90, 180, 270 (плюс небольшой рандом внутри сектора)
+                const winningSectors = [0, 90, 180, 270];
+                const randomSector = winningSectors[Math.floor(Math.random() * winningSectors.length)];
+                targetAngle = randomSector + (Math.random() * 30 - 15); // +/- 15 градусов
+            } else {
+                // Выбираем случайный темный сектор: 45, 135, 225, 315
+                const losingSectors = [45, 135, 225, 315];
+                const randomSector = losingSectors[Math.floor(Math.random() * losingSectors.length)];
+                targetAngle = randomSector + (Math.random() * 30 - 15);
+            }
+
+            // Добавляем полные обороты (5 оборотов = 1800 градусов)
+            const totalRotation = (360 * 5) + targetAngle;
             
             // Применяем вращение
-            wheel.style.transform = `rotate(${finalRotation}deg)`;
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
 
             // Ждем окончания анимации (4 секунды)
             setTimeout(() => {
-                const win = Math.random() * 100 <= currentChance;
-                
                 if (win) {
                     showToast("УСПЕХ! Подарок улучшен!");
-                    slotSourceGift = { ...slotTargetGift };
-                    if (!userInventory.find(g => g.id === slotTargetGift.id)) {
-                        userInventory.push(slotTargetGift);
-                    }
+                    // Сохраняем выигранный подарок
+                    wonGift = { ...slotTargetGift };
+                    
+                    // Показываем экран победы
+                    showWinScreen(wonGift);
+                    
                 } else {
                     showToast("ПРОВАЛ. Подарок сгорел.");
                     slotSourceGift = null;
+                    updateUI();
                 }
-
-                updateUI();
 
                 // Возвращаем колесо в исходное положение
                 setTimeout(() => {
@@ -777,6 +801,43 @@
                 }, 500);
 
             }, 4000);
+        }
+
+        // --- ЭКРАН ПОБЕДЫ ---
+        function showWinScreen(gift) {
+            document.getElementById('win-img').src = gift.img;
+            document.getElementById('win-name').innerText = gift.name;
+            document.getElementById('win-price').innerText = gift.price + ' ₽';
+            document.getElementById('sell-price').innerText = Math.floor(gift.price * 0.8); // Продажа за 80% от цены
+            
+            openModal('win-modal');
+        }
+
+        function actionUpgrade() {
+            // Оставляем подарок в слоте Source для дальнейшего апгрейда
+            slotSourceGift = wonGift;
+            if (!userInventory.find(g => g.id === wonGift.id)) {
+                userInventory.push(wonGift);
+            }
+            updateUI();
+            closeModal('win-modal');
+            showToast("Подарок добавлен в инвентарь!");
+        }
+
+        function actionSell() {
+            // Продаем подарок (начисляем 80% от стоимости)
+            const sellPrice = Math.floor(wonGift.price * 0.8);
+            userBalance += sellPrice;
+            
+            // Удаляем из инвентаря (если он там был)
+            userInventory = userInventory.filter(g => g.id !== wonGift.id);
+            
+            // Очищаем слот
+            slotSourceGift = null;
+            
+            updateUI();
+            closeModal('win-modal');
+            showToast(`Подарок продан за ${sellPrice} ₽!`);
         }
 
         // --- УТИЛИТЫ ---
