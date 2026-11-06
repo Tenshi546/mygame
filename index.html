@@ -401,17 +401,18 @@
         let isCrashPlaying = false;
         let crashTargetPoint = 1.00;
 
+        // НОВЫЕ ПОДАРКИ С НАДЕЖНЫМИ КАРТИНКАМИ
         const allGifts = [
-            { id: 1, name: "Кнопка", price: 5, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
-            { id: 2, name: "Мишка", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2985/2985114.png" },
-            { id: 3, name: "Сердце", price: 150, img: "https://cdn-icons-png.flaticon.com/512/833/833472.png" },
-            { id: 4, name: "Пицца", price: 200, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png" },
-            { id: 5, name: "Ракета", price: 500, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
-            { id: 6, name: "Кот", price: 600, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
-            { id: 7, name: "Молния", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/3194/3194766.png" },
-            { id: 8, name: "Корона", price: 3000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
-            { id: 9, name: "Звезда", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-            { id: 10, name: "Алмаз", price: 8000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" }
+            { id: 1, name: "Брелок", price: 5, img: "https://cdn-icons-png.flaticon.com/512/8726/8726107.png" },
+            { id: 2, name: "Кубик", price: 10, img: "https://cdn-icons-png.flaticon.com/512/2093/2093598.png" },
+            { id: 3, name: "Монета", price: 50, img: "https://cdn-icons-png.flaticon.com/512/2171/2171990.png" },
+            { id: 4, name: "Кристалл", price: 100, img: "https://cdn-icons-png.flaticon.com/512/3178/3178092.png" },
+            { id: 5, name: "Роза", price: 200, img: "https://cdn-icons-png.flaticon.com/512/1164/1164624.png" },
+            { id: 6, name: "Кубок", price: 500, img: "https://cdn-icons-png.flaticon.com/512/3112/3112946.png" },
+            { id: 7, name: "Корона", price: 1000, img: "https://cdn-icons-png.flaticon.com/512/2662/2662503.png" },
+            { id: 8, name: "Ракета", price: 2000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212608.png" },
+            { id: 9, name: "Алмаз", price: 5000, img: "https://cdn-icons-png.flaticon.com/512/2954/2954941.png" },
+            { id: 10, name: "Планета", price: 10000, img: "https://cdn-icons-png.flaticon.com/512/3212/3212625.png" }
         ];
 
         let userInventory = []; 
@@ -444,14 +445,21 @@
             document.getElementById('screen-crash').style.display = game === 'crash' ? 'flex' : 'none';
         }
 
+        // ИСПРАВЛЕННЫЙ ПОДБОР ЦЕЛИ (Ищет ближайший подарок к нужной сумме)
         function updateTarget() {
             if (!slotSourceGift) { slotTargetGift = null; return; }
             const targetPrice = slotSourceGift.price * currentMultiplier;
             let closestGift = null, minDiff = Infinity;
+            
             allGifts.forEach(gift => {
-                if (gift.id === slotSourceGift.id) return;
+                if (gift.id === slotSourceGift.id) return; // Нельзя улучшать на самого себя
                 const diff = Math.abs(gift.price - targetPrice);
-                if (gift.price >= targetPrice && diff < minDiff) { minDiff = diff; closestGift = gift; }
+                
+                // Ищем самый близкий по цене (и выше, и ниже)
+                if (diff < minDiff) { 
+                    minDiff = diff; 
+                    closestGift = gift; 
+                }
             });
             slotTargetGift = closestGift;
         }
@@ -475,20 +483,17 @@
             }
         }
 
-        // ИСПРАВЛЕНА ОТРИСОВКА (75% = 270 градусов)
+        // ФИКС ОТРИСОВКИ КОЛЕСА (Желтый сектор начинается строго с 12 часов и идет по часовой)
         function drawWheel() {
             const wheel = document.getElementById('wheel');
-            const deg = (currentChance / 100) * 360; // Для 75% будет 270 градусов
-            const start = 180; // Начало внизу (6 часов)
+            // Вычисляем процент заливки. Для 75% это 270 градусов.
+            const deg = (currentChance / 100) * 360; 
             
-            // Желтый сектор начинается с 180 и идет на deg градусов
-            const end = start + deg; 
-            
-            // Отрисовка: серый до 180, желтый от 180 до end, серый от end до 360
+            // conic-gradient(from 0deg) начинает рисовать с 12 часов (сверху) и идет по часовой стрелке.
+            // Это самый надежный способ отрисовки.
             wheel.style.background = `conic-gradient(
-                var(--surface) 0deg ${start}deg, 
-                var(--accent) ${start}deg ${end}deg, 
-                var(--surface) ${end}deg 360deg
+                var(--accent) 0deg ${deg}deg, 
+                var(--surface) ${deg}deg 360deg
             )`;
         }
 
@@ -511,22 +516,25 @@
             btn.disabled = true; btn.innerText = "КРУТИМ...";
             
             const win = Math.random() * 100 <= currentChance;
-            const startDeg = 180;
-            const yellowDeg = (currentChance / 100) * 360;
             
+            // Визуальный расчет: стрелка должна указать на желтую (0 - deg) или серую (deg - 360) зону
+            const yellowDeg = (currentChance / 100) * 360;
             let targetDeg = 0;
+            
             if (win) {
-                targetDeg = startDeg + Math.random() * yellowDeg;
+                // Останавливаем в желтой зоне (от 10 до yellowDeg - 10 градусов, чтобы не на границе)
+                targetDeg = 10 + Math.random() * (yellowDeg - 20);
             } else {
-                targetDeg = startDeg + yellowDeg + Math.random() * (360 - yellowDeg);
+                // Останавливаем в серой зоне
+                targetDeg = yellowDeg + 10 + Math.random() * (360 - yellowDeg - 20);
             }
 
-            // Крутим на 5 оборотов
+            // Крутим на 5 полных оборотов (1800 градусов) + нужный угол
             arrow.style.transition = `transform 5s cubic-bezier(0.15, 0.85, 0.15, 1)`;
             arrow.style.transform = `rotate(${360 * 5 + targetDeg}deg)`;
 
             setTimeout(() => {
-                // 1. Сначала удаляем предмет, который крутили (он либо сгорел, либо улучшился)
+                // 1. Сначала удаляем предмет, который крутили
                 userInventory = userInventory.filter(g => g.id !== slotSourceGift.id);
                 
                 // 2. Если победа - добавляем новый
@@ -564,7 +572,6 @@
             if (isNaN(bet) || bet < 10) { showToast("Мин. ставка 10 ₽"); return; }
             if (bet > userBalance) { showToast("Недостаточно средств!"); return; }
 
-            // Списываем ставку
             userBalance -= bet;
             crashBet = bet;
             updateUI();
@@ -573,7 +580,6 @@
             isCrashPlaying = true;
             crashMultiplier = 1.00;
             
-            // UI подготовки
             document.getElementById('crash-input-row').style.display = 'none';
             document.getElementById('crash-btn-start').style.display = 'none';
             
@@ -595,7 +601,6 @@
             path.style.stroke = 'var(--accent)';
             path.style.strokeDashoffset = '2000';
 
-            // Генерируем точку краха
             const r = Math.random();
             crashTargetPoint = (1.1 + (Math.pow(r, 2) * 14)).toFixed(2); 
             
@@ -781,4 +786,4 @@
         init();
     </script>
 </body>
-</html>
+                                                            </html>
